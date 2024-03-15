@@ -1,5 +1,5 @@
 import { CatchAsyncError } from '../middlewares/catchAsyncErrors.js';
-import ErrorHandler from '../utils/ErrorHandler.js';
+import ErrorHandler from '../exceptions/ErrorHandler.js';
 import { prismaClient } from '../index.js';
 import { compareSync, hashSync } from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -51,6 +51,9 @@ const authController = {
             return next(new ErrorHandler(error.message, 400));
         }
     }),
+    me: async (req, res) => {
+        res.json(req.user);
+    },
 };
 
 export default authController;

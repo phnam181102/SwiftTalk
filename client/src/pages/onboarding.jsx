@@ -1,7 +1,8 @@
+import Protected from "@/hooks/useProtected";
 import React from "react";
 
 function onboarding() {
-  return <div>onboarding</div>;
+  return <Protected>onboarding</Protected>;
 }
 
 export default onboarding;

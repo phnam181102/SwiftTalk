@@ -1,13 +1,22 @@
 import Button from "@/components/common/Button";
 import ButtonSocial from "@/components/common/Button/ButtonSocial";
 import Input from "@/components/common/Input";
+import {
+  useLoginMutation,
+  useRegisterMutation,
+} from "@/redux/features/auth/authApi";
 import React, { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { BsGithub, BsGoogle } from "react-icons/bs";
+import { toast } from "react-hot-toast";
+import { useRouter } from "next/router";
 
 function Login() {
   const [variant, setVariant] = useState("LOGIN");
   const [isLoading, setIsLoading] = useState(false);
+  const [registerMutation] = useRegisterMutation();
+  const [loginMutation] = useLoginMutation();
+  const router = useRouter();
 
   const toggleVariant = useCallback(() => {
     if (variant === "LOGIN") {
@@ -27,19 +36,58 @@ function Login() {
     },
   });
 
-  const onSubmit = async (data, event) => {};
+  const onSubmit = async (data, event) => {
+    setIsLoading(true);
+
+    if (variant === "REGISTER") {
+      try {
+        const result = await registerMutation(data);
+
+        if (result.error) {
+          if ("data" in result.error) {
+            const errorData = result.error;
+            toast.error(errorData.data.message);
+          }
+        } else {
+          toast.success("Register success!");
+        }
+      } catch (error) {
+        toast.error("Please try against!");
+      }
+      setIsLoading(false);
+    }
+
+    if (variant === "LOGIN") {
+      try {
+        const result = await loginMutation(data);
+
+        if (result.error) {
+          if ("data" in result.error) {
+            const errorData = result.error;
+            toast.error(errorData.data.message);
+          }
+        } else {
+          toast.success("Login success!");
+          router.push("/onboarding");
+        }
+      } catch (error) {
+        toast.error("Please try against!");
+      }
+      setIsLoading(false);
+    }
+  };
 
   const socialAction = (action) => {};
 
   return (
-    <div className="flex justify-center items-center h-screen w-screen flex-col gap-8">
+    <div className="flex justify-center items-center h-screen flex-col gap-8">
       {/* <div className="flex items-center justify-center gap-4 text-black">
         <Image src="/swifttalk.gif" alt="swifttalk" width={300} height={300} />
         <span className="text-7xl">SwiftTalk</span>
       </div> */}
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white px-4 py-8 shadown sm:rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+          <form className="space-y-3" onSubmit={handleSubmit(onSubmit)}>
             {variant === "REGISTER" && (
               <Input
                 id="name"

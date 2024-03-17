@@ -1,161 +1,239 @@
-import Button from "@/components/common/Button";
-import ButtonSocial from "@/components/common/Button/ButtonSocial";
-import Input from "@/components/common/Input";
+import Button from '@/components/common/Button';
+import ButtonSocial from '@/components/common/Button/ButtonSocial';
+import Input from '@/components/common/Input';
 import {
-  useLoginMutation,
-  useRegisterMutation,
-} from "@/redux/features/auth/authApi";
-import React, { useCallback, useState } from "react";
-import { useForm } from "react-hook-form";
-import { BsGithub, BsGoogle } from "react-icons/bs";
-import { toast } from "react-hot-toast";
-import { useRouter } from "next/router";
+    useLoginMutation,
+    useRegisterMutation,
+} from '@/redux/features/auth/authApi';
+import React, { useCallback, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { FaFacebook, FaRegUser } from 'react-icons/fa';
+import { MdLockOutline } from 'react-icons/md';
+import { FcGoogle } from 'react-icons/fc';
+import {
+    AiFillGithub,
+    AiOutlineEye,
+    AiOutlineEyeInvisible,
+} from 'react-icons/ai';
+import { HiOutlineMail } from 'react-icons/hi';
+import { toast } from 'react-hot-toast';
+import { useRouter } from 'next/router';
+import Image from 'next/image';
 
 function Login() {
-  const [variant, setVariant] = useState("LOGIN");
-  const [isLoading, setIsLoading] = useState(false);
-  const [registerMutation] = useRegisterMutation();
-  const [loginMutation] = useLoginMutation();
-  const router = useRouter();
+    const [variant, setVariant] = useState('LOGIN');
+    const [isLoading, setIsLoading] = useState(false);
+    const [registerMutation] = useRegisterMutation();
+    const [loginMutation] = useLoginMutation();
+    const router = useRouter();
+    const [show, setShow] = useState(false);
 
-  const toggleVariant = useCallback(() => {
-    if (variant === "LOGIN") {
-      setVariant("REGISTER");
-    } else setVariant("LOGIN");
-  }, [variant]);
+    const toggleVariant = useCallback(() => {
+        if (variant === 'LOGIN') {
+            setVariant('REGISTER');
+        } else setVariant('LOGIN');
+    }, [variant]);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-    },
-  });
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm({
+        defaultValues: {
+            name: '',
+            email: '',
+            password: '',
+        },
+    });
 
-  const onSubmit = async (data, event) => {
-    setIsLoading(true);
+    const onSubmit = async (data, event) => {
+        setIsLoading(true);
 
-    if (variant === "REGISTER") {
-      try {
-        const result = await registerMutation(data);
+        if (variant === 'REGISTER') {
+            try {
+                const result = await registerMutation(data);
 
-        if (result.error) {
-          if ("data" in result.error) {
-            const errorData = result.error;
-            toast.error(errorData.data.message);
-          }
-        } else {
-          toast.success("Register success!");
+                if (result.error) {
+                    if ('data' in result.error) {
+                        const errorData = result.error;
+                        toast.error(errorData.data.message);
+                    }
+                } else {
+                    toast.success('Register success!');
+                }
+            } catch (error) {
+                toast.error('Please try against!');
+            }
+            setIsLoading(false);
         }
-      } catch (error) {
-        toast.error("Please try against!");
-      }
-      setIsLoading(false);
-    }
 
-    if (variant === "LOGIN") {
-      try {
-        const result = await loginMutation(data);
+        if (variant === 'LOGIN') {
+            try {
+                const result = await loginMutation(data);
 
-        if (result.error) {
-          if ("data" in result.error) {
-            const errorData = result.error;
-            toast.error(errorData.data.message);
-          }
-        } else {
-          toast.success("Login success!");
-          router.push("/onboarding");
+                if (result.error) {
+                    if ('data' in result.error) {
+                        const errorData = result.error;
+                        toast.error(errorData.data.message);
+                    }
+                } else {
+                    toast.success('Login success!');
+                    router.push('/onboarding');
+                }
+            } catch (error) {
+                toast.error('Please try against!');
+            }
+            setIsLoading(false);
         }
-      } catch (error) {
-        toast.error("Please try against!");
-      }
-      setIsLoading(false);
-    }
-  };
+    };
 
-  const socialAction = (action) => {};
+    const socialAction = (action) => {};
 
-  return (
-    <div className="flex justify-center items-center h-screen flex-col gap-8">
-      {/* <div className="flex items-center justify-center gap-4 text-black">
-        <Image src="/swifttalk.gif" alt="swifttalk" width={300} height={300} />
-        <span className="text-7xl">SwiftTalk</span>
-      </div> */}
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white px-4 py-8 shadown sm:rounded-lg sm:px-10">
-          <form className="space-y-3" onSubmit={handleSubmit(onSubmit)}>
-            {variant === "REGISTER" && (
-              <Input
-                id="name"
-                label="Name"
-                register={register}
-                errors={errors}
-                disabled={isLoading}
-              />
-            )}
-            <Input
-              id="email"
-              label="Email"
-              type="email"
-              register={register}
-              errors={errors}
-            />
-            <Input
-              id="password"
-              label="Password"
-              type="password"
-              register={register}
-              errors={errors}
-            />
-            <div>
-              <Button disabled={isLoading} fullWidth type="submit">
-                {variant === "LOGIN" ? "Sign in" : "Register"}
-              </Button>
-            </div>
-          </form>
+    return (
+        <div className="text-[#333] bg-white">
+            <div className="min-h-screen flex justify-center ">
+                <div className="grid items-center gap-4 w-full">
+                    <div className="shadow-lg min-w-[450px] justify-self-center border border-gray-200 rounded-md p-6 px-8 max-w-md max-md:mx-auto">
+                        <form
+                            className="space-y-5 flex flex-col items-center w-full"
+                            onSubmit={handleSubmit(onSubmit)}
+                        >
+                            <Image
+                                src="/chat.png"
+                                width={80}
+                                height={80}
+                                alt="Picture of the author"
+                            />
 
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="bg-white px-2 text-gray-500">
-                  Or continue with
-                </span>
-              </div>
-            </div>
+                            <div className="mb-10 flex flex-col items-center">
+                                <h3 className="text-4xl font-semibold mb-2">
+                                    {variant === 'LOGIN'
+                                        ? 'Welcome Back'
+                                        : 'Create New Account'}
+                                </h3>
+                                <p className="text-base flex">
+                                    {variant === 'LOGIN'
+                                        ? "Don't have an account? "
+                                        : 'Already have an account? '}
 
-            <div className="mt-6 flex gap-2">
-              <ButtonSocial
-                icon={BsGithub}
-                onClick={() => socialAction("github")}
-              />
-              <ButtonSocial
-                icon={BsGoogle}
-                onClick={() => socialAction("google")}
-              />
-            </div>
-          </div>
+                                    <p
+                                        onClick={toggleVariant}
+                                        className="text-primary font-semibold hover:underline ml-1 whitespace-nowrap"
+                                    >
+                                        {variant === 'LOGIN'
+                                            ? 'Sign Up'
+                                            : 'Login'}
+                                    </p>
+                                </p>
+                            </div>
 
-          <div className="flex gap-2 justify-center text-sm mt-6 px-2 text-gray-500">
-            <div>
-              {variant === "LOGIN"
-                ? "New to Messenger?"
-                : "Already have an account?"}
+                            {variant === 'REGISTER' && (
+                                <div className="w-full relative ">
+                                    <FaRegUser
+                                        className="absolute bottom-4 left-3 z-1 cursor-pointer text-gray-500"
+                                        size={18}
+                                    />
+                                    <Input
+                                        id="name"
+                                        placeholder="Full name"
+                                        register={register}
+                                        errors={errors}
+                                        disabled={isLoading}
+                                    />
+                                </div>
+                            )}
+
+                            <div className="w-full relative ">
+                                <HiOutlineMail
+                                    className="absolute bottom-[15px] left-3 z-1 cursor-pointer text-gray-500"
+                                    size={20}
+                                />
+                                <Input
+                                    id="email"
+                                    placeholder="Email"
+                                    type="email"
+                                    register={register}
+                                    errors={errors}
+                                />
+                            </div>
+
+                            <div className="w-full mt-4 relative mb-1">
+                                <MdLockOutline
+                                    className="absolute bottom-4 left-3 z-1 cursor-pointer text-gray-500"
+                                    size={20}
+                                />
+                                <Input
+                                    id="password"
+                                    placeholder="Password"
+                                    type={!show ? 'password' : 'text'}
+                                    register={register}
+                                    errors={errors}
+                                />
+
+                                {!show ? (
+                                    <AiOutlineEyeInvisible
+                                        className="absolute bottom-4 right-3 z-1 cursor-pointer text-dark"
+                                        size={20}
+                                        onClick={() => setShow(true)}
+                                    />
+                                ) : (
+                                    <AiOutlineEye
+                                        className="absolute bottom-4 right-3 z-1 cursor-pointer text-dark"
+                                        size={20}
+                                        onClick={() => setShow(false)}
+                                    />
+                                )}
+                            </div>
+
+                            {variant === 'LOGIN' && (
+                                <div className="self-end">
+                                    <div className="text-base">
+                                        <a
+                                            href="jajvascript:void(0);"
+                                            className="text-primary hover:underline font-semibold "
+                                        >
+                                            Forgot your password?
+                                        </a>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="!mt-8 w-full">
+                                <button
+                                    disabled={isLoading}
+                                    type="submit"
+                                    className="w-full shadow-xl text-lg py-2.5 px-4 font-semibold rounded text-white bg-dark hover:bg-black focus:outline-none tracking-wide"
+                                >
+                                    {variant === 'LOGIN' ? 'Login' : 'Register'}
+                                </button>
+                            </div>
+                        </form>
+
+                        <h5 className="my-6 flex before:flex-1 before:border-b before:mr-2 before:my-auto before:border-gray-500 after:flex-1 after:border-b after:ml-2 after:my-auto after:border-gray-500 text-center font-Poppins text-[15px] text-black ">
+                            Or connect with
+                        </h5>
+
+                        <div className="flex items-center justify-center space-x-6">
+                            <FcGoogle
+                                size={40}
+                                className="cursor-pointer "
+                                onClick={() => signIn('google')}
+                            />
+                            <AiFillGithub
+                                size={40}
+                                className="cursor-pointer  text-gray-800"
+                                onClick={() => signIn('github')}
+                            />
+                            <FaFacebook
+                                size={37}
+                                className="cursor-pointer text-[#1075db]"
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div onClick={toggleVariant} className="underline cursor-pointer">
-              {variant === "LOGIN" ? "Create an account" : "Login"}
-            </div>
-          </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }
 
 export default Login;

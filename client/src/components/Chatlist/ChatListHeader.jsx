@@ -1,7 +1,19 @@
-import React from "react";
+import React from 'react';
+import Avatar from '../common/Avatar';
+// import { useStateProvider } from '@/context/StateContext';
 
 function ChatListHeader() {
-  return <div>ChatListHeader</div>;
+    // const [{ userInfo }, dispatch] = useStateProvider();
+
+    return (
+        <div className="h-16 px-4 py-3 flex justify-between items-center">
+            <div className="cursor-pointer">
+                <Avatar type="sm" image="/default_avatar.png" />
+            </div>
+
+            <div className="flex"></div>
+        </div>
+    );
 }
 
 export default ChatListHeader;

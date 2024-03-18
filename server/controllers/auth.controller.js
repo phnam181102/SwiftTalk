@@ -69,26 +69,18 @@ const authController = {
 
             const user = JSON.parse(decoded);
 
-            const accessToken = jwt.sign(
-                { id: user._id },
-                process.env.ACCESS_TOKEN,
-                { expiresIn: '1d' }
-            );
+            const accessToken = jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN, { expiresIn: '1d' });
 
-            const refreshToken = jwt.sign(
-                { id: user._id },
-                process.env.REFRESH_TOKEN,
-                {
-                    expiresIn: '3d',
-                }
-            );
+            const refreshToken = jwt.sign({ id: user._id }, process.env.REFRESH_TOKEN, {
+                expiresIn: '3d',
+            });
 
             req.user = user;
 
             res.cookie('token', accessToken, accessTokenOptions);
             res.cookie('refresh_token', refreshToken, refreshTokenOptions);
 
-           next();
+            next();
         } catch (error) {
             return next(new ErrorHandler(error.message, 400));
         }

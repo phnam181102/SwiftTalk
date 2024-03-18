@@ -8,7 +8,16 @@
     }
 }
 
+.custom-scrollbar::-webkit-scrollbar {
+    height: 8px !important;
+    width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: red;
+}
+
 body {
     background-color: #202022;
     color: #fff;
+    overflow-x: hidden;
 }

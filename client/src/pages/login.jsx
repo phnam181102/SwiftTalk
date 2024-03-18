@@ -77,8 +77,7 @@ function Login() {
                         toast.error(errorData.data.message);
                     }
                 } else {
-                    toast.success('Login success!');
-                    router.push('/onboarding');
+                    router.push('/');
                 }
             } catch (error) {
                 toast.error('Please try against!');
@@ -90,10 +89,10 @@ function Login() {
     const socialAction = (action) => {};
 
     return (
-        <div className="text-[#333] bg-white">
-            <div className="min-h-screen flex justify-center ">
-                <div className="grid items-center gap-4 w-full">
-                    <div className="shadow-lg min-w-[450px] justify-self-center border border-gray-200 rounded-md p-6 px-8 max-w-md max-md:mx-auto">
+        <div className="text-[#333] bg-primary-200">
+            <div className="min-h-screen flex justify-center">
+                <div className=" grid items-center gap-4 w-full">
+                    <div className="bg-white shadow-lg min-w-[450px] justify-self-center rounded-md p-8 max-w-md max-md:mx-auto">
                         <form
                             className="space-y-5 flex flex-col items-center w-full"
                             onSubmit={handleSubmit(onSubmit)}
@@ -118,7 +117,7 @@ function Login() {
 
                                     <p
                                         onClick={toggleVariant}
-                                        className="text-primary font-semibold hover:underline ml-1 whitespace-nowrap"
+                                        className="text-primary-300 font-semibold hover:underline ml-1 whitespace-nowrap"
                                     >
                                         {variant === 'LOGIN'
                                             ? 'Sign Up'
@@ -190,7 +189,7 @@ function Login() {
                                     <div className="text-base">
                                         <a
                                             href="jajvascript:void(0);"
-                                            className="text-primary hover:underline font-semibold "
+                                            className="text-primary-300 hover:underline font-semibold "
                                         >
                                             Forgot your password?
                                         </a>
@@ -202,7 +201,7 @@ function Login() {
                                 <button
                                     disabled={isLoading}
                                     type="submit"
-                                    className="w-full shadow-xl text-lg py-2.5 px-4 font-semibold rounded text-white bg-dark hover:bg-black focus:outline-none tracking-wide"
+                                    className="w-full shadow-xl text-lg py-2.5 px-4 font-semibold rounded text-white bg-dark hover:bg-black hover:shadow-2xl focus:outline-none tracking-wide"
                                 >
                                     {variant === 'LOGIN' ? 'Login' : 'Register'}
                                 </button>

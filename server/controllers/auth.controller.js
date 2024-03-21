@@ -88,6 +88,24 @@ const authController = {
     me: async (req, res) => {
         res.json(req.user);
     },
+    socialAuth: CatchAsyncError(async (req, res, next) => {
+        try {
+            const { email, name, avatar } = req.body
+
+            const user = await prismaClient.user.findFirst({ where: { email } });
+
+            if (!user) {
+                user = await prismaClient.user.create({
+                    data: { name, email, hashedPassword: hashSync(password, 10) },
+                });
+            }
+                
+            const token = authController.generateAccessToken(user);
+            res.json({ success: true, user, token });
+        } catch (error) {
+            return next(new ErrorHandler(error.message, 500));
+        }
+    })
 };
 
 export default authController;

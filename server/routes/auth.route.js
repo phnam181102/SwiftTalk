@@ -8,5 +8,6 @@ authRouter.post('/login', authController.login);
 authRouter.post('/register', authController.register);
 authRouter.get('/refresh', authController.updateAccessToken);
 authRouter.get('/me', [authMiddleware], authController.me);
+authRouter.post('/social-auth', authController.socialAuth)
 
 export default authRouter;

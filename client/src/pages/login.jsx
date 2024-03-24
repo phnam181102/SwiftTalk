@@ -19,6 +19,7 @@ import { HiOutlineMail } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
+import { signIn } from "next-auth/react";
 
 function Login() {
     const [variant, setVariant] = useState('LOGIN');
@@ -86,7 +87,36 @@ function Login() {
         }
     };
 
-    const socialAction = (action) => {};
+    const socialAction = async (action) => {
+        setIsLoading(true)
+
+        try {
+            const callback = await signIn(action, { redirect: false });
+
+            if (callback?.ok && !callback?.error) {
+                toast.success('Logged in!!')
+            }
+            // ... your existing logic based on callback.error and callback.ok
+        } catch (error) {
+            console.error('Error during sign-in:', error);
+            toast.error('An error occurred. Please try again.');
+            // Handle error further (e.g., display a generic error message)
+        } finally {
+            setIsLoading(false);
+        }
+
+        // signIn(action, {redirect: false})
+        // .then((callback) => {
+        //     if (callback?.error) {
+        //         toast.error('Invalid Credentials')
+        //     }
+
+        //     if (callback?.ok && !callback?.error) {
+        //         toast.success('Logged in!!')
+        //     }
+        // })
+        // .finally(() => setIsLoading(false))
+    };
 
     return (
         <div className="text-[#333] bg-primary-200">
@@ -216,12 +246,12 @@ function Login() {
                             <FcGoogle
                                 size={40}
                                 className="cursor-pointer "
-                                onClick={() => signIn('google')}
+                                onClick={() => socialAction('google')}
                             />
                             <AiFillGithub
                                 size={40}
                                 className="cursor-pointer  text-gray-800"
-                                onClick={() => signIn('github')}
+                                onClick={() => socialAction('github')}
                             />
                             <FaFacebook
                                 size={37}

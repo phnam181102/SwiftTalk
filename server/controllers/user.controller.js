@@ -5,7 +5,14 @@ import { prismaClient } from '../index.js';
 // get all users
 export const getAllUsers = CatchAsyncError(async (req, res, next) => {
     try {
+        const { userId } = req.params; // Lấy userId từ params
+
         const users = await prismaClient.user.findMany({
+            where: {
+                id: {
+                    not: userId, // Loại bỏ người dùng có userId cụ thể
+                },
+            },
             orderBy: {
                 name: 'asc',
             },

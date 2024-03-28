@@ -8,9 +8,8 @@ import { useSelector } from 'react-redux';
 
 function ChatHeader() {
     const { currentChatUser } = useSelector((state) => state.user);
-
     return (
-        <div className="h-20 px-5 py-4 flex justify-between items-center bg-white z-10">
+        <div className="h-20 px-5 py-4 flex justify-between shadow-[0_8px_24px_0_rgba(149,157,165,0.2)] items-center bg-white z-10">
             <div className="flex items-center justify-center gap-6">
                 <Avatar type="sm" image={'/default_avatar.png'} />
 

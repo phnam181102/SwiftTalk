@@ -10,13 +10,13 @@ const authController = {
     register: CatchAsyncError(async (req, res, next) => {
         try {
             RegisterSchema.parse(req.body);
-            const { name, email, password } = req.body;
+            const { name, username, email, password } = req.body;
             let user = await prismaClient.user.findFirst({ where: { email } });
             if (user) {
                 return next(new ErrorHandler('Email already exist', 400));
             }
             user = await prismaClient.user.create({
-                data: { name, email, hashedPassword: hashSync(password, 10) },
+                data: { name, email, username, hashedPassword: hashSync(password, 10) },
             });
 
             res.json(user);

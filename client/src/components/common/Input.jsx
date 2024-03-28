@@ -9,6 +9,7 @@ function Input({
     register,
     errors,
     disabled,
+    autofocus = false,
 }) {
     return (
         <input
@@ -17,9 +18,10 @@ function Input({
             autoComplete={id}
             placeholder={placeholder}
             disabled={disabled}
+            autoFocus={autofocus}
             {...register(id, { required })}
             className={clsx(
-                'w-full shadow text-black bg-transparent border border-gray h-[50px] pl-10 pr-4 rounded outline-none mt-[8px] font-Poppins',
+                'w-full shadow text-black bg-transparent border border-[#9ca3af] h-[50px] pl-10 pr-4 rounded outline-none font-Poppins outline-none',
                 errors[id] && 'focus:ring-rose-500',
                 disabled && 'opacity-50 cursor-default'
             )}

@@ -1,5 +1,3 @@
-import Button from '@/components/common/Button';
-import ButtonSocial from '@/components/common/Button/ButtonSocial';
 import Input from '@/components/common/Input';
 import {
     useLoginMutation,
@@ -10,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { FaFacebook, FaRegUser } from 'react-icons/fa';
 import { MdLockOutline } from 'react-icons/md';
 import { FcGoogle } from 'react-icons/fc';
+import { HiOutlineAtSymbol } from 'react-icons/hi';
 import {
     AiFillGithub,
     AiOutlineEye,
@@ -28,23 +27,26 @@ function Login() {
     const router = useRouter();
     const [show, setShow] = useState(false);
 
-    const toggleVariant = useCallback(() => {
-        if (variant === 'LOGIN') {
-            setVariant('REGISTER');
-        } else setVariant('LOGIN');
-    }, [variant]);
-
     const {
         register,
         handleSubmit,
+        reset,
         formState: { errors },
     } = useForm({
         defaultValues: {
             name: '',
+            username: '',
             email: '',
             password: '',
         },
     });
+
+    const toggleVariant = useCallback(() => {
+        reset();
+        if (variant === 'LOGIN') {
+            setVariant('REGISTER');
+        } else setVariant('LOGIN');
+    }, [variant]);
 
     const onSubmit = async (data, event) => {
         setIsLoading(true);
@@ -115,15 +117,33 @@ function Login() {
                                         ? "Don't have an account? "
                                         : 'Already have an account? '}
 
-                                    <p
+                                    <span
                                         onClick={toggleVariant}
-                                        className="text-primary-300 font-semibold hover:underline ml-1 whitespace-nowrap"
+                                        className="text-primary-300
+                                        font-semibold hover:underline ml-1
+                                        whitespace-nowrap"
                                     >
                                         {variant === 'LOGIN'
                                             ? 'Sign Up'
                                             : 'Login'}
-                                    </p>
+                                    </span>
                                 </p>
+                            </div>
+
+                            <div className="w-full relative ">
+                                <HiOutlineMail
+                                    className="absolute bottom-[15px] left-3 z-1 cursor-pointer text-gray-500"
+                                    size={20}
+                                />
+                                <Input
+                                    id="email"
+                                    placeholder="Email"
+                                    type="email"
+                                    register={register}
+                                    errors={errors}
+                                    autofocus={true}
+                                    disabled={isLoading}
+                                />
                             </div>
 
                             {variant === 'REGISTER' && (
@@ -142,19 +162,22 @@ function Login() {
                                 </div>
                             )}
 
-                            <div className="w-full relative ">
-                                <HiOutlineMail
-                                    className="absolute bottom-[15px] left-3 z-1 cursor-pointer text-gray-500"
-                                    size={20}
-                                />
-                                <Input
-                                    id="email"
-                                    placeholder="Email"
-                                    type="email"
-                                    register={register}
-                                    errors={errors}
-                                />
-                            </div>
+                            {variant === 'REGISTER' && (
+                                <div className="w-full relative ">
+                                    <HiOutlineAtSymbol
+                                        className="absolute bottom-[15px] left-3 z-1 cursor-pointer text-gray-500"
+                                        size={20}
+                                    />
+                                    <Input
+                                        id="username"
+                                        placeholder="Username"
+                                        type="username"
+                                        register={register}
+                                        errors={errors}
+                                        disabled={isLoading}
+                                    />
+                                </div>
+                            )}
 
                             <div className="w-full mt-4 relative mb-1">
                                 <MdLockOutline
@@ -167,6 +190,7 @@ function Login() {
                                     type={!show ? 'password' : 'text'}
                                     register={register}
                                     errors={errors}
+                                    disabled={isLoading}
                                 />
 
                                 {!show ? (

@@ -12,7 +12,6 @@ function ChatListItem({ data, isContactsPage = false }) {
     const handleContactClick = () => {
         if (currentChatUser?.id !== data?.id) {
             dispatch(changeCurrentChatUser({ user: data }));
-            console.log(data.name);
             dispatch(showAllContactsPage());
         }
     };

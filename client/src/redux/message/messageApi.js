@@ -17,7 +17,14 @@ export const messageApi = apiSlice.injectEndpoints({
                 credentials: 'include',
             }),
         }),
+        getInitialContact: builder.query({
+            query: ({ from }) => ({
+                url: `get-initial-contacts/${from}`,
+                method: 'GET',
+                credentials: 'include'
+            })
+        })
     }),
 });
 
-export const { useAddMessageMutation, useGetMessagesQuery } = messageApi;
+export const { useAddMessageMutation, useGetMessagesQuery, useGetInitialContactQuery } = messageApi;

@@ -5,6 +5,9 @@ const initialState = {
     currentChatUser: undefined,
     messages: [],
     socket: undefined,
+    userContacts: [],
+    onlineUsers: [],
+    filteredContacts: [],
 };
 
 const userSlice = createSlice({
@@ -26,6 +29,23 @@ const userSlice = createSlice({
         setSocket: (state, action) => {
             state.socket = action.payload.socket;
         },
+        setUserContacts: (state, action) => {
+            state.userContacts = action.payload.userContacts;
+        },
+        setOnlineUsers: (state, action) => {
+            state.onlineUsers = action.payload.onlineUsers;
+        },
+        setContactSearch: (state, action) => {
+            const filteredContacts = state.userContacts.filter((contact) =>
+                contact.name.toLowerCase().includes(action.payload.contactSearch.toLowerCase()),
+            );
+
+            return {
+                ...state,
+                contactSearch: action.payload.contactSearch,
+                filteredContacts,
+            };
+        },
     },
 });
 
@@ -35,6 +55,9 @@ export const {
     setMessages,
     setSocket,
     addMessage,
+    setUserContacts,
+    setOnlineUsers,
+    setContactSearch,
 } = userSlice.actions;
 
 export default userSlice.reducer;

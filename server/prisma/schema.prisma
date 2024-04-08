@@ -14,16 +14,16 @@ datasource db {
 }
 
 model User {
-  id             String     @id @default(auto()) @map("_id") @db.ObjectId
-  email          String     @unique
-  name           String?
-  username       String     @unique
-  profilePicture String     @default("")
-  hashedPassword String
-  createAt       DateTime   @default(now())
-  updateAt       DateTime   @updatedAt
-  sentMessages   Messages[] @relation("sentMessages")
-  Messages       Messages[] @relation("receivedMessages")
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
+  email            String     @unique
+  name             String?
+  username         String     @unique
+  profilePicture   String     @default("")
+  hashedPassword   String
+  createAt         DateTime   @default(now())
+  updateAt         DateTime   @updatedAt
+  sentMessages     Messages[] @relation("sentMessages")
+  receivedMessages Messages[] @relation("receivedMessages")
 }
 
 model Messages {

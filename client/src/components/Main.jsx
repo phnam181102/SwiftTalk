@@ -8,7 +8,7 @@ import Empty from './Empty';
 import Chat from './Chat/Chat';
 import { addMessage } from '../redux/user/userSlice';
 import { HOST } from '../utils/ApiRoutes';
-import { useGetMessagesQuery } from '../redux/message/messageApi';
+import { useGetInitialContactQuery, useGetMessagesQuery } from '../redux/message/messageApi';
 
 function Main() {
     const { currentChatUser } = useSelector((state) => state.user);
@@ -19,6 +19,8 @@ function Main() {
         from: user?.id,
         to: currentChatUser?.id,
     });
+
+    const { data, error, refetch: refetchInitialContact } = useGetInitialContactQuery({ from: user?.id });
 
     const socket = useRef();
     const dispatch = useDispatch();
@@ -39,12 +41,28 @@ function Main() {
                         newMessage: {
                             ...data.message,
                         },
-                    })
+                    }),
                 );
             });
             setSocketEvent(true);
         }
     }, [socket.current]);
+
+    // useEffect(() => {
+    //     if (user?.id) {
+    //         const userId = user.id;
+    //         socket.current.emit('get-initial-contacts', { userId });
+    //     }
+
+    //     socket.current.on('get-initial-contacts-response', (userId) => {
+    //         // console.log('socket', { userId });
+    //         refetchInitialContact();
+    //     });
+
+    //     return () => {
+    //         socket.current.off('get-initial-contacts-response');
+    //     };
+    // }, [socket.current]);
 
     return (
         <Protected>

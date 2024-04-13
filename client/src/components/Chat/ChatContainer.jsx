@@ -1,10 +1,16 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import dynamic from 'next/dynamic';
 
 import { useGetMessagesQuery } from '../../redux/message/messageApi';
 import Loader from '../Loader';
 import MessageStatus from '../common/MessageStatus';
 import { calculateTime } from '../../utils/CalculateTime';
+import ImageMessage from './ImageMessage';
+
+const VoiceMessage = dynamic(() => import('./VoiceMessage'), {
+    ssr: false,
+});
 
 function ChatContainer() {
     const { user } = useSelector((state) => state.auth);
@@ -71,6 +77,8 @@ function ChatContainer() {
                                         </div>
                                     </div>
                                 )}
+                                {message.type === 'image' && <ImageMessage message={message} />}
+                                {message.type === 'audio' && <VoiceMessage message={message} />}
                             </div>
                         ))}
                     </div>

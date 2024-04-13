@@ -1,8 +1,10 @@
 import getPrismaInstance from '../utils/PrismaClient.js';
 import { prismaClient } from '../index.js';
+import { renameSync } from 'fs';
 
 const messageController = {
     addMessage: async (req, res, next) => {
+        console.log({ req });
         try {
             const prisma = getPrismaInstance();
             const { message, from, to } = req.body;
@@ -161,6 +163,69 @@ const messageController = {
             });
         } catch (e) {
             next(e);
+        }
+    },
+
+    addImageMessage: async (req, res, next) => {
+        try {
+            if (req.file) {
+                const date = Date.now();
+                let fileName = 'uploads/images/' + date + req.file.originalName;
+                renameSync(req.file.path, fileName);
+                const prisma = getPrismaInstance();
+                const { from, to } = req.query;
+
+                if (from && to) {
+                    const message = await prisma.messages.create({
+                        data: {
+                            message: fileName,
+                            type: 'image',
+                            sender: { connect: { id: from } },
+                            receiver: { connect: { id: to } },
+                        },
+                    });
+                    return res.status(201).send({
+                        message,
+                    });
+                }
+                return res.status(400).send('From, to is required.');
+            }
+            return res.status(400).send('Image is required.');
+        } catch (e) {
+            console.log(e);
+            // next(e);
+        }
+    },
+
+    addAudioMessage: async (req, res, next) => {
+        try {
+            if (req.file) {
+                console.log(req.file);
+                const date = Date.now();
+                let fileName = 'uploads/recordings/' + date + req.file.originalName;
+                renameSync(req.file.path, fileName);
+                const prisma = getPrismaInstance();
+                const { from, to } = req.query;
+
+                if (from && to) {
+                    const message = await prisma.messages.create({
+                        data: {
+                            message: fileName,
+                            type: 'audio',
+                            sender: { connect: { id: from } },
+                            receiver: { connect: { id: to } },
+                        },
+                    });
+                    return res.status(201).send({
+                        message,
+                    });
+                }
+                return res.status(400).send('From, to is required.');
+            }
+            return res.status(400).send('Audio is required.');
+        } catch (e) {
+            console.log(e);
+            // next(e);
         }
     },
 };

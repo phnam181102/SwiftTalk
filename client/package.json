@@ -14,7 +14,7 @@
         "axios": "^1.4.0",
         "clsx": "^2.1.0",
         "cookie-parser": "^1.4.6",
-        "emoji-picker-react": "^4.4.9",
+        "emoji-picker-react": "^4.9.2",
         "next": "13.4.1",
         "next-auth": "^4.24.5",
         "postcss": "^8.4.23",

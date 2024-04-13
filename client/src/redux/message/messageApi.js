@@ -21,10 +21,44 @@ export const messageApi = apiSlice.injectEndpoints({
             query: ({ from }) => ({
                 url: `get-initial-contacts/${from}`,
                 method: 'GET',
-                credentials: 'include'
-            })
-        })
+                credentials: 'include',
+            }),
+        }),
+        addImageMessage: builder.mutation({
+            query: ({ formData, from, to }) => {
+                return {
+                    url: `add-image-message`,
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData,
+                    params: {
+                        from,
+                        to,
+                    },
+                };
+            },
+        }),
+        addAudioMessage: builder.mutation({
+            query: ({ formData, from, to }) => {
+                return {
+                    url: `add-audio-message`,
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData,
+                    params: {
+                        from,
+                        to,
+                    },
+                };
+            },
+        }),
     }),
 });
 
-export const { useAddMessageMutation, useGetMessagesQuery, useGetInitialContactQuery } = messageApi;
+export const {
+    useAddMessageMutation,
+    useGetMessagesQuery,
+    useGetInitialContactQuery,
+    useAddImageMessageMutation,
+    useAddAudioMessageMutation,
+} = messageApi;

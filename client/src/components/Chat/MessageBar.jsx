@@ -8,7 +8,12 @@ import { GrMicrophone } from 'react-icons/gr';
 import { ImAttachment } from 'react-icons/im';
 import EmojiPicker from 'emoji-picker-react';
 
-import { useAddMessageMutation, useAddImageMessageMutation, useGetMessagesQuery } from '@/redux/message/messageApi';
+import {
+    useAddMessageMutation,
+    useAddImageMessageMutation,
+    useGetMessagesQuery,
+    useGetInitialContactQuery,
+} from '@/redux/message/messageApi';
 import { useRef } from 'react';
 import { useEffect } from 'react';
 import PhotoPicker from '../common/PhotoPicker';
@@ -34,6 +39,8 @@ function MessageBar({ socket }) {
         from: user?.id,
         to: currentChatUser?.id,
     });
+
+    const { refetch: refetchInitialContact } = useGetInitialContactQuery({ from: user?.id });
 
     useEffect(() => {
         const handleOutsideClick = (e) => {
@@ -73,6 +80,7 @@ function MessageBar({ socket }) {
                     message: data.message,
                 });
                 refetch();
+                refetchInitialContact();
             }
         } catch (error) {
             console.log(error.message);
@@ -101,6 +109,7 @@ function MessageBar({ socket }) {
                 message: data.message,
             });
             refetch();
+            refetchInitialContact();
         } catch (error) {
             console.log(error.message);
         }

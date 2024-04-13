@@ -27,7 +27,7 @@ export const apiSlice = createApi({
                         userLoggedIn({
                             token: result.data.token,
                             user: result.data.user,
-                        })
+                        }),
                     );
                 } catch (error) {
                     console.log(error);

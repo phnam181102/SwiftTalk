@@ -49,7 +49,7 @@ function VoiceMessage({ message }) {
         const audio = new Audio(audioUrl);
         setAudioMessage(audio);
         if (waveForm.current) {
-            waveForm.current?.load(audioUrl);
+            // waveForm.current?.load(audioUrl);
             waveForm.current.on('ready', () => {
                 setTotalDuration(waveForm.current.getDuration());
             });

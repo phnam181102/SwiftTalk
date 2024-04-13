@@ -20,7 +20,7 @@ function Main() {
         to: currentChatUser?.id,
     });
 
-    const { data, error, refetch: refetchInitialContact } = useGetInitialContactQuery({ from: user?.id });
+    const { refetch: refetchInitialContact } = useGetInitialContactQuery({ from: user?.id });
 
     const socket = useRef();
     const dispatch = useDispatch();
@@ -36,6 +36,7 @@ function Main() {
         if (socket.current && !socketEvent) {
             socket.current.on('msg-receive', (data) => {
                 refetch();
+                refetchInitialContact();
                 dispatch(
                     addMessage({
                         newMessage: {
@@ -48,21 +49,21 @@ function Main() {
         }
     }, [socket.current]);
 
-    // useEffect(() => {
-    //     if (user?.id) {
-    //         const userId = user.id;
-    //         socket.current.emit('get-initial-contacts', { userId });
-    //     }
+    useEffect(() => {
+        if (user?.id) {
+            const userId = user.id;
+            socket.current.emit('get-initial-contacts', { userId });
+        }
 
-    //     socket.current.on('get-initial-contacts-response', (userId) => {
-    //         // console.log('socket', { userId });
-    //         refetchInitialContact();
-    //     });
+        socket.current.on('get-initial-contacts-response', (userId) => {
+            // console.log('socket', { userId });
+            refetchInitialContact();
+        });
 
-    //     return () => {
-    //         socket.current.off('get-initial-contacts-response');
-    //     };
-    // }, [socket.current]);
+        return () => {
+            socket.current.off('get-initial-contacts-response');
+        };
+    }, [socket.current]);
 
     return (
         <Protected>

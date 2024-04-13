@@ -11,7 +11,7 @@ const authMiddleware = async (req, res, next) => {
     try {
         const payload = jwt.verify(token, process.env.ACCESS_TOKEN);
 
-        const user = await prismaClient.user.findFirst({ where: { id: payload.userId } });
+        const user = await prismaClient.user.findFirst({ where: { id: payload.id } });
 
         if (!user) {
             next(new UnauthorizedException('Unauthorized', 401));

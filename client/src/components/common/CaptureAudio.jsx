@@ -7,7 +7,11 @@ import { IoSend } from 'react-icons/io5';
 import { formatTime } from '../../utils/formatTime';
 import { toast } from 'react-hot-toast';
 import { createFormData } from '../../utils/createFormData';
-import { useAddAudioMessageMutation, useGetMessagesQuery } from '../../redux/message/messageApi';
+import {
+    useAddAudioMessageMutation,
+    useGetMessagesQuery,
+    useGetInitialContactQuery,
+} from '../../redux/message/messageApi';
 
 function CaptureAudio({ hide, socket }) {
     const { currentChatUser } = useSelector((state) => state.user);
@@ -33,6 +37,8 @@ function CaptureAudio({ hide, socket }) {
         from: user?.id,
         to: currentChatUser?.id,
     });
+
+    const { refetch: refetchInitialContact } = useGetInitialContactQuery({ from: user?.id });
 
     useEffect(() => {
         let interval;
@@ -168,6 +174,7 @@ function CaptureAudio({ hide, socket }) {
                     message: data.message,
                 });
                 refetch();
+                refetchInitialContact();
                 hide();
             }
         } catch (error) {

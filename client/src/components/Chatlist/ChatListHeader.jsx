@@ -2,13 +2,11 @@ import React from 'react';
 import { BsThreeDotsVertical } from 'react-icons/bs';
 import { FiEdit } from 'react-icons/fi';
 
-import { useGetAllUserQuery } from '@/redux/user/userApi';
 import Avatar from '../common/Avatar';
 import { useDispatch, useSelector } from 'react-redux';
 import { showAllContactsPage } from '@/redux/user/userSlice';
 
 function ChatListHeader() {
-    const { data: users, isLoading, isError } = useGetAllUserQuery();
     const user = useSelector((state) => state.user);
     const dispatch = useDispatch();
 

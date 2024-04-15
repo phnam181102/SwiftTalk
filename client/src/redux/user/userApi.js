@@ -1,12 +1,10 @@
 import { apiSlice } from '../features/api/apiSlice';
 
-import { showAllContactsPage } from './userSlice';
-
 export const userApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getAllUser: builder.query({
-            query: () => ({
-                url: 'get-users',
+            query: ({ userId }) => ({
+                url: `get-users/${userId}`,
                 method: 'GET',
                 credentials: 'include',
             }),

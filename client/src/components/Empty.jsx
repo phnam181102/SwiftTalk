@@ -7,8 +7,9 @@ function Empty() {
             <Image
                 src="/swifttalk.gif"
                 alt="swifttalk"
-                height={300}
                 width={300}
+                height={300}
+                layout="fixed"
             />
         </div>
     );

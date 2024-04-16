@@ -1,23 +1,17 @@
 import Input from '@/components/common/Input';
-import {
-    useLoginMutation,
-    useRegisterMutation,
-} from '@/redux/features/auth/authApi';
+import { useLoginMutation, useRegisterMutation } from '@/redux/features/auth/authApi';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FaFacebook, FaRegUser } from 'react-icons/fa';
 import { MdLockOutline } from 'react-icons/md';
 import { FcGoogle } from 'react-icons/fc';
 import { HiOutlineAtSymbol } from 'react-icons/hi';
-import {
-    AiFillGithub,
-    AiOutlineEye,
-    AiOutlineEyeInvisible,
-} from 'react-icons/ai';
+import { AiFillGithub, AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { HiOutlineMail } from 'react-icons/hi';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
+import { signIn } from 'next-auth/react';
 
 function Login() {
     const [variant, setVariant] = useState('LOGIN');
@@ -88,34 +82,36 @@ function Login() {
         }
     };
 
-    const socialAction = (action) => {};
+    const socialAction = (action) => {
+        setIsLoading(true);
+
+        signIn(action, { redirect: false })
+            .then((callback) => {
+                if (callback?.error) {
+                    toast.error('Invalid credentials');
+                }
+
+                if (callback?.ok && !callback?.error) {
+                    toast.success('Logged in!');
+                }
+            })
+            .finally(() => setIsLoading(false));
+    };
 
     return (
         <div className="text-[#333] bg-primary-200">
             <div className="min-h-screen flex justify-center">
                 <div className=" grid items-center gap-4 w-full">
                     <div className="bg-white shadow-lg min-w-[450px] justify-self-center rounded-md p-8 max-w-md max-md:mx-auto">
-                        <form
-                            className="space-y-5 flex flex-col items-center w-full"
-                            onSubmit={handleSubmit(onSubmit)}
-                        >
-                            <Image
-                                src="/chat.png"
-                                width={80}
-                                height={80}
-                                alt="Picture of the author"
-                            />
+                        <form className="space-y-5 flex flex-col items-center w-full" onSubmit={handleSubmit(onSubmit)}>
+                            <Image src="/chat.png" width={80} height={80} alt="Picture of the author" />
 
                             <div className="mb-10 flex flex-col items-center">
                                 <h3 className="text-4xl font-semibold mb-2">
-                                    {variant === 'LOGIN'
-                                        ? 'Welcome Back'
-                                        : 'Create New Account'}
+                                    {variant === 'LOGIN' ? 'Welcome Back' : 'Create New Account'}
                                 </h3>
                                 <p className="text-base flex">
-                                    {variant === 'LOGIN'
-                                        ? "Don't have an account? "
-                                        : 'Already have an account? '}
+                                    {variant === 'LOGIN' ? "Don't have an account? " : 'Already have an account? '}
 
                                     <span
                                         onClick={toggleVariant}
@@ -123,9 +119,7 @@ function Login() {
                                         font-semibold hover:underline ml-1
                                         whitespace-nowrap"
                                     >
-                                        {variant === 'LOGIN'
-                                            ? 'Sign Up'
-                                            : 'Login'}
+                                        {variant === 'LOGIN' ? 'Sign Up' : 'Login'}
                                     </span>
                                 </p>
                             </div>
@@ -237,19 +231,16 @@ function Login() {
                         </h5>
 
                         <div className="flex items-center justify-center space-x-6">
-                            <FcGoogle
-                                size={40}
-                                className="cursor-pointer "
-                                onClick={() => signIn('google')}
-                            />
+                            <FcGoogle size={40} className="cursor-pointer " onClick={() => socialAction('google')} />
                             <AiFillGithub
                                 size={40}
                                 className="cursor-pointer  text-gray-800"
-                                onClick={() => signIn('github')}
+                                onClick={() => socialAction('github')}
                             />
                             <FaFacebook
                                 size={37}
                                 className="cursor-pointer text-[#1075db]"
+                                // onClick={() => socialAction('facebook')}
                             />
                         </div>
                     </div>

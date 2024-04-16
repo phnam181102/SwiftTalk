@@ -1,12 +1,15 @@
-import ToasterContext from "@/context/ToasterContext";
-import { Providers } from "@/Provider";
-import "@/styles/globals.css";
+import ToasterContext from '@/context/ToasterContext';
+import { Providers } from '@/Provider';
+import { SessionProvider } from 'next-auth/react';
+import '@/styles/globals.css';
 
-export default function App({ Component, pageProps }) {
-  return (
-    <Providers>
-      <ToasterContext />
-      <Component {...pageProps} />
-    </Providers>
-  );
+export default function App({ Component, pageProps: { session, ...pageProps } }) {
+    return (
+        <Providers>
+            <SessionProvider>
+                <ToasterContext />
+                <Component {...pageProps} />
+            </SessionProvider>
+        </Providers>
+    );
 }

@@ -7,6 +7,9 @@ import { showAllContactsPage } from '../../redux/user/userSlice';
 import { calculateTime } from '../../utils/CalculateTime';
 import MessageStatus from '../common/MessageStatus';
 
+import { FaMicrophone } from 'react-icons/fa';
+import { IoCamera } from 'react-icons/io5';
+
 function ChatListItem({ data, isContactsPage = false }) {
     const { user } = useSelector((state) => state.auth);
     const { currentChatUser } = useSelector((state) => state.user);
@@ -64,6 +67,16 @@ function ChatListItem({ data, isContactsPage = false }) {
                                 <div className="flex items-center gap-1 max-w-[200px] sm:max-w-[250px] md:max-w-[300px] lg:max-w-[200px]">
                                     {data.senderId === user.id && <MessageStatus messageStatus={data.message} />}
                                     {data.type === 'text' && <span className="truncate">{data.message}</span>}
+                                    {data.type === 'image' && (
+                                        <span className="flex items-center gap-1">
+                                            <IoCamera /> image
+                                        </span>
+                                    )}
+                                    {data.type === 'audio' && (
+                                        <span className="flex items-center gap-1">
+                                            <FaMicrophone /> audio
+                                        </span>
+                                    )}
                                 </div>
                             )}
                         </span>

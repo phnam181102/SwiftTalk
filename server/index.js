@@ -31,6 +31,9 @@ app.use('/api/v1/', authRouter);
 app.use('/api/v1/', userRouter);
 app.use('/api/v1/', messageRouter);
 
+app.use('/uploads/images', express.static('uploads/images'));
+app.use('/uploads/recordings', express.static('uploads/recordings'));
+
 export const prismaClient = new PrismaClient({
     log: ['query'],
 });
@@ -58,6 +61,7 @@ io.on('connection', (socket) => {
 
     socket.on('send-msg', (data) => {
         const sendUserSocket = onlineUsers.get(data.to);
+        console.log('aaaa', sendUserSocket);
         if (sendUserSocket) {
             socket.to(sendUserSocket).emit('msg-receive', {
                 from: data.from,
@@ -65,4 +69,19 @@ io.on('connection', (socket) => {
             });
         }
     });
+
+    socket.on('get-initial-contacts', (data) => {
+        console.log({ data });
+        socket.emit('get-initial-contacts-response', data);
+    });
+
+    socket.on('join chat', (userId) => {
+        socket.join(userId);
+        console.log('Chatting with ' + userId);
+    });
+
+    socket.on('typing', (userId) => {
+        socket.emit('typing');
+    });
+    socket.on('stop typing', (userId) => socket.in(userId).emit('stop typing'));
 });

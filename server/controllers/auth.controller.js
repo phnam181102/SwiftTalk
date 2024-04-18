@@ -41,6 +41,12 @@ const authController = {
 
             const token = authController.generateAccessToken(user);
 
+            res.cookie('token', token, {
+                httpOnly: true,
+                path: '/',
+                sameSite: 'strict',
+            });
+
             res.json({ success: true, user, token });
         } catch (error) {
             if (error.errors) {
@@ -53,7 +59,7 @@ const authController = {
     generateAccessToken: (user) => {
         return jwt.sign(
             {
-                userId: user.id,
+                id: user.id,
             },
             process.env.ACCESS_TOKEN,
             { expiresIn: '3d' },
@@ -86,7 +92,7 @@ const authController = {
         }
     }),
     me: async (req, res) => {
-        res.json(req.user);
+        res.json({ user: req.user, token: req.cookies.token });
     },
 };
 

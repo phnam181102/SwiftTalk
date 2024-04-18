@@ -7,6 +7,7 @@ import { IoSend } from 'react-icons/io5';
 import { GrMicrophone } from 'react-icons/gr';
 import { ImAttachment } from 'react-icons/im';
 import EmojiPicker from 'emoji-picker-react';
+import Lottie from 'lottie-react';
 
 import {
     useAddMessageMutation,
@@ -18,6 +19,7 @@ import { useRef } from 'react';
 import { useEffect } from 'react';
 import PhotoPicker from '../common/PhotoPicker';
 import { createFormData } from '../../utils/createFormData';
+import animationData from '../../../public/animation/typing.json';
 
 const CaptureAudio = dynamic(() => import('../common/CaptureAudio'), {
     ssr: false,
@@ -31,6 +33,8 @@ function MessageBar({ socket }) {
     const [showEmojiPicker, setShowEmokiPicker] = useState(false);
     const [grabPhoto, setGrabPhoto] = useState(false);
     const [showAudioRecorder, setShowAudioRecorder] = useState(false);
+    const [typing, setTyping] = useState(false);
+    const [isTyping, setIsTyping] = useState(false);
     const emojiPickerRef = useRef(null);
 
     const [addMessageMutation] = useAddMessageMutation();
@@ -94,7 +98,7 @@ function MessageBar({ socket }) {
         }
     };
 
-    const sendMessage = async () => {
+    const sendMessage = async (e) => {
         setMessage('');
 
         try {
@@ -110,6 +114,7 @@ function MessageBar({ socket }) {
             });
             refetch();
             refetchInitialContact();
+            socket.current.emit('stop typing', currentChatUser?.id);
         } catch (error) {
             console.log(error.message);
         }
@@ -127,66 +132,103 @@ function MessageBar({ socket }) {
         }
     }, [grabPhoto]);
 
+    const typingHandler = async (e) => {
+        setMessage(e.target.value);
+
+        if (!typing) {
+            setTyping(true);
+            socket.current.emit('typing', currentChatUser?.id);
+        }
+
+        let lastTypingTime = new Date().getTime();
+        let timerLength = 1000;
+
+        setTimeout(() => {
+            let timeNow = new Date().getTime();
+            let timeDiff = timeNow - lastTypingTime;
+
+            if (timeDiff >= timerLength && typing) {
+                socket.current.emit('stop typing', currentChatUser?.id);
+                setTyping(false);
+            }
+        }, timerLength);
+    };
+
+    useEffect(() => {
+        socket.current.on('typing', () => setIsTyping(true));
+        socket.current.on('stop typing', () => setIsTyping(false));
+    }, []);
+
+
     return (
-        <div className="bg-primary-100 py-2 px-6 mx-12 mb-4 flex items-center gap-6 rounded-lg relative">
-            {!showAudioRecorder && (
-                <>
-                    <div className="flex gap-6">
-                        <BsEmojiSmile
-                            className="text-primary-300 cursor-pointer font-medium text-xl stroke-[0.4px]"
-                            title="Emoji"
-                            id="emoji-open"
-                            onClick={handleEmojiModal}
-                        />
-                        {showEmojiPicker && (
-                            <div className="absolute bottom-16 left-6 z-40" ref={emojiPickerRef}>
-                                <EmojiPicker onEmojiClick={handleEmojiClick} theme="light" />
-                            </div>
-                        )}
-                        <ImAttachment
-                            className="text-primary-300 cursor-pointer text-xl"
-                            title="Attach File"
-                            onClick={() => setGrabPhoto(true)}
-                        />
-                        <GrMicrophone
-                            className="text-primary-300 cursor-pointer text-xl"
-                            title="Record"
-                            onClick={() => setShowAudioRecorder(true)}
-                        />
+        <>
+            <div>
+                {isTyping && (
+                    <div className="h-[30px] w-[50px] ml-[48px]">
+                        <Lottie animationData={animationData} className="h-full" loop={true} />
                     </div>
-
-                    <div className="w-full rounded-lg h-10 flex items-center">
-                        <input
-                            type="text"
-                            placeholder="Type message..."
-                            className="bg-primary-100 text-sm focus:outline-none text-dark w-full h-10 rounded-lg px-3 py-4"
-                            onChange={(e) => setMessage(e.target.value)}
-                            value={message}
-                            onKeyDown={handleKeyDown}
-                        />
-                    </div>
-
-                    <div className="flex w-10 items-center justify-center">
-                        <button>
-                            <IoSend
-                                className="text-primary-300 cursor-pointer text-2xl hover:text-[#5f61ed]"
-                                title="Send Message"
-                                onClick={sendMessage}
+                )}
+            </div>
+            <div className="bg-primary-100 py-2 px-6 mx-12 mb-4 flex items-center gap-6 rounded-lg relative">
+                {!showAudioRecorder && (
+                    <>
+                        <div className="flex gap-6">
+                            <BsEmojiSmile
+                                className="text-primary-300 cursor-pointer font-medium text-xl stroke-[0.4px]"
+                                title="Emoji"
+                                id="emoji-open"
+                                onClick={handleEmojiModal}
                             />
-                        </button>
-                    </div>
-                </>
-            )}
+                            {showEmojiPicker && (
+                                <div className="absolute bottom-16 left-6 z-40" ref={emojiPickerRef}>
+                                    <EmojiPicker onEmojiClick={handleEmojiClick} theme="light" />
+                                </div>
+                            )}
+                            <ImAttachment
+                                className="text-primary-300 cursor-pointer text-xl"
+                                title="Attach File"
+                                onClick={() => setGrabPhoto(true)}
+                            />
+                            <GrMicrophone
+                                className="text-primary-300 cursor-pointer text-xl"
+                                title="Record"
+                                onClick={() => setShowAudioRecorder(true)}
+                            />
+                        </div>
 
-            {grabPhoto && <PhotoPicker onChange={photoPickerChange} />}
-            {showAudioRecorder && (
-                <CaptureAudio
-                    hide={() => setShowAudioRecorder(false)}
-                    socket={socket}
-                    onChange={setShowAudioRecorder}
-                />
-            )}
-        </div>
+                        <div className="w-full rounded-lg h-10 flex items-center">
+                            <input
+                                type="text"
+                                placeholder="Type message..."
+                                className="bg-primary-100 text-sm focus:outline-none text-dark w-full h-10 rounded-lg px-3 py-4"
+                                onChange={typingHandler}
+                                value={message}
+                                onKeyDown={handleKeyDown}
+                            />
+                        </div>
+
+                        <div className="flex w-10 items-center justify-center">
+                            <button>
+                                <IoSend
+                                    className="text-primary-300 cursor-pointer text-2xl hover:text-[#5f61ed]"
+                                    title="Send Message"
+                                    onClick={sendMessage}
+                                />
+                            </button>
+                        </div>
+                    </>
+                )}
+
+                {grabPhoto && <PhotoPicker onChange={photoPickerChange} />}
+                {showAudioRecorder && (
+                    <CaptureAudio
+                        hide={() => setShowAudioRecorder(false)}
+                        socket={socket}
+                        onChange={setShowAudioRecorder}
+                    />
+                )}
+            </div>
+        </>
     );
 }
 

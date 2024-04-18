@@ -18,7 +18,7 @@ function Chat({ socket }) {
     return (
         <div className=" w-full bg-white flex flex-col h-[100vh] z-10 text-dark">
             <ChatHeader />
-            <ChatContainer key={`cc${currentChatUser.id}`} />
+            <ChatContainer socket={socket} key={`cc${currentChatUser.id}`} />
             <MessageBar socket={socket} key={`mb${currentChatUser.id}`} />
         </div>
     );

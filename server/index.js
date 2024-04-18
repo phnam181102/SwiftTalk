@@ -74,4 +74,14 @@ io.on('connection', (socket) => {
         console.log({ data });
         socket.emit('get-initial-contacts-response', data);
     });
+
+    socket.on('join chat', (userId) => {
+        socket.join(userId);
+        console.log('Chatting with ' + userId);
+    });
+
+    socket.on('typing', (userId) => {
+        socket.emit('typing');
+    });
+    socket.on('stop typing', (userId) => socket.in(userId).emit('stop typing'));
 });

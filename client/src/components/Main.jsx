@@ -56,7 +56,6 @@ function Main() {
         }
 
         socket.current.on('get-initial-contacts-response', (userId) => {
-            // console.log('socket', { userId });
             refetchInitialContact();
         });
 

@@ -26,6 +26,10 @@ function ChatContainer({ socket }) {
         if (messages) {
             socket.current.emit('join chat', currentChatUser?.id);
         }
+
+        return () => {
+            socket.current.emit('leave chat');
+        };
     }, [messages]);
 
     return (

@@ -8,6 +8,7 @@ import authRouter from './routes/auth.route.js';
 import userRouter from './routes/user.route.js';
 import messageRouter from './routes/message.route.js';
 import { Server } from 'socket.io';
+import { getUserIdFromSocket } from './utils/GetUserIdFromSocket.js';
 
 dotenv.config();
 const app = express();
@@ -53,6 +54,7 @@ const io = new Server(server, {
 
 global.onlineUsers = new Map();
 
+const usersTyping = {};
 io.on('connection', (socket) => {
     global.chatSocket = socket;
     socket.on('add-user', (userId) => {
@@ -77,11 +79,24 @@ io.on('connection', (socket) => {
 
     socket.on('join chat', (userId) => {
         socket.join(userId);
-        console.log('Chatting with ' + userId);
+        usersTyping[userId] = false;
     });
 
     socket.on('typing', (userId) => {
-        socket.emit('typing');
+        usersTyping[userId] = true;
+        socket.broadcast.emit('typing', userId);
     });
-    socket.on('stop typing', (userId) => socket.in(userId).emit('stop typing'));
+
+    socket.on('stop typing', (userId) => {
+        usersTyping[userId] = false;
+        socket.broadcast.emit('stop typing', userId);
+    });
+
+    socket.on('leave chat', () => {
+        const userId = getUserIdFromSocket(socket);
+        if (userId) {
+            delete usersTyping[userId];
+            console.log('User ' + userId + ' left the chat');
+        }
+    });
 });

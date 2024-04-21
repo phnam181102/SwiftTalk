@@ -5,6 +5,7 @@ import { compareSync, hashSync } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { RegisterSchema } from '../schema/users.js';
 import { accessTokenOptions, refreshTokenOptions } from '../utils/Jwt.js';
+import { generateToken04 } from '../utils/TokenGenerator.js';
 
 const authController = {
     register: CatchAsyncError(async (req, res, next) => {
@@ -93,6 +94,22 @@ const authController = {
     }),
     me: async (req, res) => {
         res.json({ user: req.user, token: req.cookies.token });
+    },
+    generateTokenCall: (req, res, next) => {
+        try {
+            const appId = parseInt(process.env.ZEGO_APP_ID);
+            const serverSecret = process.env.ZEGO_SERVER_ID;
+            const userId = req.params.userId;
+            const effectiveTime = 3600;
+            const payload = '';
+            if (appId && serverSecret && userId) {
+                const token = generateToken04(appId, userId, serverSecret, effectiveTime, payload);
+                res.status(200).json({ token });
+            }
+            return res.status(400).send('User id, app id and server secret is required.');
+        } catch (error) {
+            next(error);
+        }
     },
 };
 

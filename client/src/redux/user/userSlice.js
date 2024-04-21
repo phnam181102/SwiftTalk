@@ -8,6 +8,10 @@ const initialState = {
     userContacts: [],
     onlineUsers: [],
     filteredContacts: [],
+    videoCall: undefined,
+    voiceCall: undefined,
+    incomingVoiceCall: undefined,
+    incomingVideoCall: undefined,
 };
 
 const userSlice = createSlice({
@@ -46,6 +50,24 @@ const userSlice = createSlice({
                 filteredContacts,
             };
         },
+        setVideoCall: (state, action) => {
+            state.videoCall = action.payload.videoCall;
+        },
+        setVoiceCall: (state, action) => {
+            state.voiceCall = action.payload.voiceCall;
+        },
+        setIncomingVoiceCall: (state, action) => {
+            state.incomingVoiceCall = action.payload.incomingVoiceCall;
+        },
+        setIncomingVideoCall: (state, action) => {
+            state.incomingVideoCall = action.payload.incomingVideoCall;
+        },
+        endCall: (state, action) => {
+            state.voiceCall = undefined;
+            state.videoCall = undefined;
+            state.incomingVoiceCall = undefined;
+            state.incomingVideoCall = undefined;
+        },
     },
 });
 
@@ -58,6 +80,11 @@ export const {
     setUserContacts,
     setOnlineUsers,
     setContactSearch,
+    setVideoCall,
+    setVoiceCall,
+    setIncomingVoiceCall,
+    setIncomingVideoCall,
+    endCall,
 } = userSlice.actions;
 
 export default userSlice.reducer;

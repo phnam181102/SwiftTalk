@@ -5,6 +5,7 @@ import { FiEdit } from 'react-icons/fi';
 import Avatar from '../common/Avatar';
 import { useDispatch, useSelector } from 'react-redux';
 import { showAllContactsPage } from '@/redux/user/userSlice';
+import { clearFilteredContacts } from '../../redux/user/userSlice';
 
 function ChatListHeader() {
     const user = useSelector((state) => state.auth.user);
@@ -12,6 +13,7 @@ function ChatListHeader() {
 
     const handleAllContactsPage = () => {
         dispatch(showAllContactsPage());
+        dispatch(clearFilteredContacts());
     };
 
     return (

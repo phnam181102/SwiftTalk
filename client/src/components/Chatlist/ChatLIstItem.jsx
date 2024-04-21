@@ -1,9 +1,9 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Avatar from '../common/Avatar';
 import { changeCurrentChatUser } from '@/redux/user/userSlice';
-import { showAllContactsPage } from '../../redux/user/userSlice';
+import { showAllContactsPage } from '@/redux/user/userSlice';
+import Avatar from '../common/Avatar';
 import { calculateTime } from '../../utils/CalculateTime';
 import MessageStatus from '../common/MessageStatus';
 
@@ -12,11 +12,9 @@ import { IoCamera } from 'react-icons/io5';
 
 function ChatListItem({ data, isContactsPage = false }) {
     const { user } = useSelector((state) => state.auth);
-    const { currentChatUser } = useSelector((state) => state.user);
     const dispatch = useDispatch();
 
     const handleContactClick = () => {
-        // if (currentChatUser?.id !== data?.id) {
         if (!isContactsPage) {
             dispatch(
                 changeCurrentChatUser({
@@ -31,7 +29,6 @@ function ChatListItem({ data, isContactsPage = false }) {
             dispatch(changeCurrentChatUser({ user: data }));
             dispatch(showAllContactsPage());
         }
-        // }
     };
 
     return (
@@ -45,6 +42,7 @@ function ChatListItem({ data, isContactsPage = false }) {
                     <div>
                         <span className="text-light">{data?.name}</span>
                     </div>
+
                     {!isContactsPage && (
                         <div>
                             <span
@@ -62,7 +60,7 @@ function ChatListItem({ data, isContactsPage = false }) {
                     <div className="flex justify-between w-full">
                         <span className="text-primary-200 line-clamp-1 text-sm">
                             {isContactsPage ? (
-                                '@username'
+                                `@${data?.username}`
                             ) : (
                                 <div className="flex items-center gap-1 max-w-[200px] sm:max-w-[250px] md:max-w-[300px] lg:max-w-[200px]">
                                     {data.senderId === user.id && <MessageStatus messageStatus={data.message} />}

@@ -6,12 +6,13 @@ import Protected from '@/hooks/useProtected';
 import ChatList from './Chatlist/ChatList';
 import Empty from './Empty';
 import Chat from './Chat/Chat';
+import SearchMessages from './Chat/SearchMessages';
 import { addMessage } from '../redux/user/userSlice';
 import { HOST } from '../utils/ApiRoutes';
 import { useGetInitialContactQuery, useGetMessagesQuery } from '../redux/message/messageApi';
 
 function Main() {
-    const { currentChatUser } = useSelector((state) => state.user);
+    const { currentChatUser, messagesSearch } = useSelector((state) => state.user);
     const { user } = useSelector((state) => state.auth);
     const [socketEvent, setSocketEvent] = useState(false);
 
@@ -68,7 +69,14 @@ function Main() {
         <Protected>
             <div className="grid grid-cols-main h-screen w-screen max-h-screen max-w-full overflow-hidden">
                 <ChatList />
-                {!currentChatUser ? <Empty /> : <Chat socket={socket} />}
+                {currentChatUser ? (
+                    <div className={messagesSearch ? 'grid grid-cols-2' : 'grid-cols-2'}>
+                        <Chat socket={socket} />
+                        {messagesSearch && <SearchMessages />}
+                    </div>
+                ) : (
+                    <Empty />
+                )}
             </div>
         </Protected>
     );

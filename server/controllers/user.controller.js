@@ -18,7 +18,7 @@ export const getAllUsers = CatchAsyncError(async (req, res, next) => {
             },
             select: {
                 id: true,
-                email: true,
+                username: true,
                 name: true,
             },
         });

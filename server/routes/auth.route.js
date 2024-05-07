@@ -5,6 +5,7 @@ import authController from '../controllers/auth.controller.js';
 import authMiddleware from '../middlewares/AuthMiddleware.js';
 
 authRouter.post('/login', authController.login);
+authRouter.post('/social-auth', authController.socialAuth);
 authRouter.post('/register', authController.register);
 authRouter.get('/refresh', authController.updateAccessToken);
 authRouter.get('/me', [authMiddleware], authController.me);

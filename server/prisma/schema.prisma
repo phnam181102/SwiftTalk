@@ -19,7 +19,7 @@ model User {
   name             String?
   username         String     @unique
   profilePicture   String     @default("")
-  hashedPassword   String
+  hashedPassword   String?
   createAt         DateTime   @default(now())
   updateAt         DateTime   @updatedAt
   sentMessages     Messages[] @relation("sentMessages")

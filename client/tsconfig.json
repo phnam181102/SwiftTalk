@@ -17,11 +17,6 @@
         "isolatedModules": true,
         "jsx": "preserve"
     },
-    "include": [
-        "next-env.d.ts",
-        "**/*.ts",
-        "**/*.tsx",
-        "src/redux/user/userApi.js"
-    ],
+    "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/redux/user/userApi.js"],
     "exclude": ["node_modules"]
 }

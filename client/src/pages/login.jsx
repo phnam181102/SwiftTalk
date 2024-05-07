@@ -1,24 +1,47 @@
-import Input from '@/components/common/Input';
-import { useLoginMutation, useRegisterMutation } from '@/redux/features/auth/authApi';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { signIn, useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/router';
+import Image from 'next/image';
+import { toast } from 'react-hot-toast';
+
 import { FaFacebook, FaRegUser } from 'react-icons/fa';
 import { MdLockOutline } from 'react-icons/md';
 import { FcGoogle } from 'react-icons/fc';
 import { HiOutlineAtSymbol } from 'react-icons/hi';
-import { AiFillGithub, AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import { HiOutlineMail } from 'react-icons/hi';
-import { toast } from 'react-hot-toast';
-import { useRouter } from 'next/router';
-import Image from 'next/image';
+import { AiFillGithub, AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
+
+import Input from '@/components/common/Input';
+import { useLoginMutation, useSocialAuthMutation, useRegisterMutation } from '../redux/features/auth/authApi';
+import { useSelector } from 'react-redux';
 
 function Login() {
-    const [variant, setVariant] = useState('LOGIN');
-    const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
+
     const [registerMutation] = useRegisterMutation();
     const [loginMutation] = useLoginMutation();
-    const router = useRouter();
+    const [socialAuth, { isSuccess, error }] = useSocialAuthMutation();
+
+    const { data } = useSession();
+    const { user } = useSelector((state) => state.auth);
+
+    const [variant, setVariant] = useState('LOGIN');
+    const [isLoading, setIsLoading] = useState(false);
     const [show, setShow] = useState(false);
+
+    useEffect(() => {
+        if (!user) {
+            if (data) {
+                const { email, name, image } = data?.user;
+                socialAuth({ email, name, profilePicture: image });
+            }
+        }
+    }, [data, user]);
+
+    useEffect(() => {
+        router.push('/');
+    }, [isSuccess]);
 
     const {
         register,
@@ -80,8 +103,6 @@ function Login() {
             setIsLoading(false);
         }
     };
-
-    const socialAction = (action) => {};
 
     return (
         <div className="text-[#333] bg-primary-200">
@@ -226,7 +247,11 @@ function Login() {
                                 className="cursor-pointer  text-gray-800"
                                 onClick={() => signIn('github')}
                             />
-                            <FaFacebook size={37} className="cursor-pointer text-[#1075db]" />
+                            <FaFacebook
+                                size={37}
+                                className="cursor-pointer text-[#1075db]"
+                                onClick={() => signIn('google')}
+                            />
                         </div>
                     </div>
                 </div>

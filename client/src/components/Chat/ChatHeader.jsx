@@ -5,7 +5,7 @@ import { FiSearch } from 'react-icons/fi';
 
 import Avatar from '../common/Avatar';
 import { useDispatch, useSelector } from 'react-redux';
-import { setMessageSearch } from '../../redux/user/userSlice';
+import { setMessageSearch, setVideoCall, setVoiceCall } from '../../redux/user/userSlice';
 
 function ChatHeader() {
     const dispatch = useDispatch();
@@ -13,6 +13,32 @@ function ChatHeader() {
 
     const handleMessageSearch = () => {
         dispatch(setMessageSearch());
+    };
+
+    const handleVoiceCall = () => {
+        dispatch(
+            setVoiceCall({
+                voiceCall: {
+                    ...currentChatUser,
+                    type: 'out-going',
+                    callType: 'voice',
+                    roomId: Date.now(),
+                },
+            }),
+        );
+    };
+
+    const handleVideoCall = () => {
+        dispatch(
+            setVideoCall({
+                videoCall: {
+                    ...currentChatUser,
+                    type: 'out-going',
+                    callType: 'video',
+                    roomId: Date.now(),
+                },
+            }),
+        );
     };
 
     return (
@@ -27,9 +53,9 @@ function ChatHeader() {
             </div>
 
             <div className="flex gap-6 items-center">
-                <BsTelephone className="text-gray cursor-pointer text-2xl " />
-                <IoVideocamOutline className="text-gray cursor-pointer text-3xl " />
-                <FiSearch className="text-gray cursor-pointer text-2xl " onClick={handleMessageSearch} />
+                <BsTelephone className="text-gray cursor-pointer text-2xl " onClick={handleVoiceCall} />
+                <IoVideocamOutline className="text-gray cursor-pointer text-3xl " onClick={handleVideoCall} />
+                <FiSearch className="text-gray cursor-pointer text-2xl" onClick={handleMessageSearch} />
                 <BsThreeDotsVertical className="text-gray cursor-pointer text-2xl " />
             </div>
         </div>

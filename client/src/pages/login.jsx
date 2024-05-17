@@ -40,7 +40,9 @@ function Login() {
     }, [data, user]);
 
     useEffect(() => {
-        router.push('/');
+        if (isSuccess) {
+            router.push('/');
+        }
     }, [isSuccess]);
 
     const {

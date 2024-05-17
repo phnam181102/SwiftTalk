@@ -1,16 +1,21 @@
-import { useRouter } from "next/router";
-import { useEffect } from "react";
-import useAuth from "./useAuth";
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import useAuth from './useAuth';
 
 export default function Protected({ children }) {
-  const router = useRouter();
-  const isAuthenticated = useAuth();
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/login"); // Redirect on server-side
-    }
-  }, [isAuthenticated]);
+    const router = useRouter();
+    const isAuthenticated = useAuth();
 
-  return isAuthenticated ? children : null;
+    useEffect(() => {
+        if (!isAuthenticated) {
+            router.push('/login'); // Redirect on server-side
+        }
+    }, [isAuthenticated]);
+
+    return isAuthenticated ? mounted && children : null;
 }

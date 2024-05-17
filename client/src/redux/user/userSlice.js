@@ -6,8 +6,11 @@ const initialState = {
     messages: [],
     socket: undefined,
     userContacts: [],
+    allContacts: [],
     onlineUsers: [],
     filteredContacts: [],
+    filteredAllContacts: [],
+    messagesSearch: false,
     videoCall: undefined,
     voiceCall: undefined,
     incomingVoiceCall: undefined,
@@ -39,16 +42,41 @@ const userSlice = createSlice({
         setOnlineUsers: (state, action) => {
             state.onlineUsers = action.payload.onlineUsers;
         },
+        setAllContacts: (state, action) => {
+            state.allContacts = action.payload.allContacts;
+        },
         setContactSearch: (state, action) => {
-            const filteredContacts = state.userContacts.filter((contact) =>
-                contact.name.toLowerCase().includes(action.payload.contactSearch.toLowerCase()),
-            );
+            const { contactSearch } = action.payload;
 
-            return {
-                ...state,
-                contactSearch: action.payload.contactSearch,
-                filteredContacts,
-            };
+            if (state.contactsPage) {
+                let filteredAllContacts = [];
+                if (contactSearch && contactSearch.length > 0) {
+                    if (contactSearch.startsWith('@')) {
+                        // Nếu tìm kiếm bắt đầu bằng @ thì tìm theo username
+                        const usernameSearch = contactSearch.slice(1).toLowerCase();
+                        filteredAllContacts = state.allContacts.filter((contact) =>
+                            contact.username.toLowerCase().startsWith(usernameSearch),
+                        );
+                    } else {
+                        // Ngược lại, tìm kiếm bằng tên
+                        filteredAllContacts = state.allContacts.filter((contact) =>
+                            contact.name.toLowerCase().includes(contactSearch.toLowerCase()),
+                        );
+                    }
+                }
+                return { ...state, contactSearch, filteredAllContacts };
+            } else {
+                const filteredContacts = state.userContacts.filter((contact) =>
+                    contact.name.toLowerCase().includes(contactSearch.toLowerCase()),
+                );
+                return { ...state, contactSearch, filteredContacts };
+            }
+        },
+        clearFilteredContacts: (state) => {
+            return { ...state, filteredContacts: [], filteredAllContacts: [] };
+        },
+        setMessageSearch: (state) => {
+            state.messagesSearch = !state.messagesSearch;
         },
         setVideoCall: (state, action) => {
             state.videoCall = action.payload.videoCall;
@@ -79,7 +107,10 @@ export const {
     addMessage,
     setUserContacts,
     setOnlineUsers,
+    setAllContacts,
     setContactSearch,
+    setMessageSearch,
+    clearFilteredContacts,
     setVideoCall,
     setVoiceCall,
     setIncomingVoiceCall,

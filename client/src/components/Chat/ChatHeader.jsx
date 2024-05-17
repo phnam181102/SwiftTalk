@@ -5,11 +5,15 @@ import { FiSearch } from 'react-icons/fi';
 
 import Avatar from '../common/Avatar';
 import { useDispatch, useSelector } from 'react-redux';
-import { setVideoCall, setVoiceCall } from '../../redux/user/userSlice';
+import { setMessageSearch, setVideoCall, setVoiceCall } from '../../redux/user/userSlice';
 
 function ChatHeader() {
-    const { currentChatUser } = useSelector((state) => state.user);
     const dispatch = useDispatch();
+    const { currentChatUser } = useSelector((state) => state.user);
+
+    const handleMessageSearch = () => {
+        dispatch(setMessageSearch());
+    };
 
     const handleVoiceCall = () => {
         dispatch(
@@ -51,7 +55,7 @@ function ChatHeader() {
             <div className="flex gap-6 items-center">
                 <BsTelephone className="text-gray cursor-pointer text-2xl " onClick={handleVoiceCall} />
                 <IoVideocamOutline className="text-gray cursor-pointer text-3xl " onClick={handleVideoCall} />
-                <FiSearch className="text-gray cursor-pointer text-2xl " />
+                <FiSearch className="text-gray cursor-pointer text-2xl" onClick={handleMessageSearch} />
                 <BsThreeDotsVertical className="text-gray cursor-pointer text-2xl " />
             </div>
         </div>

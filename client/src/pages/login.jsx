@@ -1,31 +1,47 @@
-import Input from '@/components/common/Input';
-import {
-    useLoginMutation,
-    useRegisterMutation,
-} from '@/redux/features/auth/authApi';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { signIn, useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/router';
+import Image from 'next/image';
+import { toast } from 'react-hot-toast';
+
 import { FaFacebook, FaRegUser } from 'react-icons/fa';
 import { MdLockOutline } from 'react-icons/md';
 import { FcGoogle } from 'react-icons/fc';
 import { HiOutlineAtSymbol } from 'react-icons/hi';
-import {
-    AiFillGithub,
-    AiOutlineEye,
-    AiOutlineEyeInvisible,
-} from 'react-icons/ai';
 import { HiOutlineMail } from 'react-icons/hi';
-import { toast } from 'react-hot-toast';
-import { useRouter } from 'next/router';
-import Image from 'next/image';
+import { AiFillGithub, AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
+
+import Input from '@/components/common/Input';
+import { useLoginMutation, useSocialAuthMutation, useRegisterMutation } from '../redux/features/auth/authApi';
+import { useSelector } from 'react-redux';
 
 function Login() {
-    const [variant, setVariant] = useState('LOGIN');
-    const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
+
     const [registerMutation] = useRegisterMutation();
     const [loginMutation] = useLoginMutation();
-    const router = useRouter();
+    const [socialAuth, { isSuccess, error }] = useSocialAuthMutation();
+
+    const { data } = useSession();
+    const { user } = useSelector((state) => state.auth);
+
+    const [variant, setVariant] = useState('LOGIN');
+    const [isLoading, setIsLoading] = useState(false);
     const [show, setShow] = useState(false);
+
+    useEffect(() => {
+        if (!user) {
+            if (data) {
+                const { email, name, image } = data?.user;
+                socialAuth({ email, name, profilePicture: image });
+            }
+        }
+    }, [data, user]);
+
+    useEffect(() => {
+        router.push('/');
+    }, [isSuccess]);
 
     const {
         register,
@@ -88,34 +104,20 @@ function Login() {
         }
     };
 
-    const socialAction = (action) => {};
-
     return (
         <div className="text-[#333] bg-primary-200">
             <div className="min-h-screen flex justify-center">
                 <div className=" grid items-center gap-4 w-full">
                     <div className="bg-white shadow-lg min-w-[450px] justify-self-center rounded-md p-8 max-w-md max-md:mx-auto">
-                        <form
-                            className="space-y-5 flex flex-col items-center w-full"
-                            onSubmit={handleSubmit(onSubmit)}
-                        >
-                            <Image
-                                src="/chat.png"
-                                width={80}
-                                height={80}
-                                alt="Picture of the author"
-                            />
+                        <form className="space-y-5 flex flex-col items-center w-full" onSubmit={handleSubmit(onSubmit)}>
+                            <Image src="/chat.png" width={80} height={80} alt="Picture of the author" />
 
                             <div className="mb-10 flex flex-col items-center">
                                 <h3 className="text-4xl font-semibold mb-2">
-                                    {variant === 'LOGIN'
-                                        ? 'Welcome Back'
-                                        : 'Create New Account'}
+                                    {variant === 'LOGIN' ? 'Welcome Back' : 'Create New Account'}
                                 </h3>
                                 <p className="text-base flex">
-                                    {variant === 'LOGIN'
-                                        ? "Don't have an account? "
-                                        : 'Already have an account? '}
+                                    {variant === 'LOGIN' ? "Don't have an account? " : 'Already have an account? '}
 
                                     <span
                                         onClick={toggleVariant}
@@ -123,9 +125,7 @@ function Login() {
                                         font-semibold hover:underline ml-1
                                         whitespace-nowrap"
                                     >
-                                        {variant === 'LOGIN'
-                                            ? 'Sign Up'
-                                            : 'Login'}
+                                        {variant === 'LOGIN' ? 'Sign Up' : 'Login'}
                                     </span>
                                 </p>
                             </div>
@@ -143,6 +143,7 @@ function Login() {
                                     errors={errors}
                                     autofocus={true}
                                     disabled={isLoading}
+                                    required={true}
                                 />
                             </div>
 
@@ -158,6 +159,7 @@ function Login() {
                                         register={register}
                                         errors={errors}
                                         disabled={isLoading}
+                                        required={true}
                                     />
                                 </div>
                             )}
@@ -175,6 +177,7 @@ function Login() {
                                         register={register}
                                         errors={errors}
                                         disabled={isLoading}
+                                        required={true}
                                     />
                                 </div>
                             )}
@@ -191,6 +194,7 @@ function Login() {
                                     register={register}
                                     errors={errors}
                                     disabled={isLoading}
+                                    required={true}
                                 />
 
                                 {!show ? (
@@ -237,11 +241,7 @@ function Login() {
                         </h5>
 
                         <div className="flex items-center justify-center space-x-6">
-                            <FcGoogle
-                                size={40}
-                                className="cursor-pointer "
-                                onClick={() => signIn('google')}
-                            />
+                            <FcGoogle size={40} className="cursor-pointer " onClick={() => signIn('google')} />
                             <AiFillGithub
                                 size={40}
                                 className="cursor-pointer  text-gray-800"
@@ -250,6 +250,7 @@ function Login() {
                             <FaFacebook
                                 size={37}
                                 className="cursor-pointer text-[#1075db]"
+                                onClick={() => signIn('google')}
                             />
                         </div>
                     </div>

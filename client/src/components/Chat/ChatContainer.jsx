@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import dynamic from 'next/dynamic';
 
 import { useGetMessagesQuery } from '../../redux/message/messageApi';
@@ -7,6 +7,7 @@ import Loader from '../Loader';
 import MessageStatus from '../common/MessageStatus';
 import { calculateTime } from '../../utils/CalculateTime';
 import ImageMessage from './ImageMessage';
+import { setMessages } from '../../redux/user/userSlice';
 
 const VoiceMessage = dynamic(() => import('./VoiceMessage'), {
     ssr: false,
@@ -15,6 +16,7 @@ const VoiceMessage = dynamic(() => import('./VoiceMessage'), {
 function ChatContainer({ socket }) {
     const { user } = useSelector((state) => state.auth);
     const { currentChatUser } = useSelector((state) => state.user);
+    const dispatch = useDispatch();
 
     const {
         data: { messages } = {},
@@ -23,6 +25,8 @@ function ChatContainer({ socket }) {
     } = useGetMessagesQuery({ from: user?.id, to: currentChatUser?.id }, { forceRefetch: true });
 
     useEffect(() => {
+        dispatch(setMessages({ messages }));
+
         if (messages) {
             socket.current.emit('join chat', currentChatUser?.id);
         }

@@ -4,8 +4,11 @@ import { prismaClient } from '../index.js';
 import { compareSync, hashSync } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { RegisterSchema } from '../schema/users.js';
-import { accessTokenOptions, refreshTokenOptions } from '../utils/Jwt.js';
+import { accessTokenOptions, refreshTokenOptions, sendToken } from '../utils/Jwt.js';
 import { generateToken04 } from '../utils/TokenGenerator.js';
+
+import dotenv from 'dotenv';
+dotenv.config();
 
 const authController = {
     register: CatchAsyncError(async (req, res, next) => {
@@ -26,6 +29,27 @@ const authController = {
         }
     }),
 
+    socialAuth: CatchAsyncError(async (req, res, next) => {
+        try {
+            const { email, name, profilePicture } = req.body;
+
+            let user = await prismaClient.user.findFirst({ where: { email } });
+
+            if (!user) {
+                const username = email.split('@')[0];
+                user = await prismaClient.user.create({
+                    data: { name, email, username, profilePicture },
+                });
+                sendToken(user, 200, res);
+            } else {
+                sendToken(user, 200, res);
+            }
+        } catch (error) {
+            console.log(error);
+            return next(new ErrorHandler(error.message, 400));
+        }
+    }),
+
     login: CatchAsyncError(async (req, res, next) => {
         try {
             const { email, password } = req.body;
@@ -40,15 +64,7 @@ const authController = {
                 return next(new ErrorHandler('Incorrect password', 400));
             }
 
-            const token = authController.generateAccessToken(user);
-
-            res.cookie('token', token, {
-                httpOnly: true,
-                path: '/',
-                sameSite: 'strict',
-            });
-
-            res.json({ success: true, user, token });
+            sendToken(user, 200, res);
         } catch (error) {
             if (error.errors) {
                 return next(new ErrorHandler(error.errors[0].message, 400));
@@ -92,9 +108,11 @@ const authController = {
             return next(new ErrorHandler(error.message, 400));
         }
     }),
+
     me: async (req, res) => {
         res.json({ user: req.user, token: req.cookies.token });
     },
+
     generateTokenCall: (req, res, next) => {
         try {
             const appId = parseInt(process.env.ZEGO_APP_ID);

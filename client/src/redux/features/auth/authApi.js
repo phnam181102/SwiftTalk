@@ -26,36 +26,56 @@ export const authApi = apiSlice.injectEndpoints({
                     const result = await queryFulfilled;
                     dispatch(
                         userLoggedIn({
-                            token: result.data.token,
+                            accessToken: result.data.accessToken,
                             user: result.data.user,
-                        })
+                        }),
                     );
                 } catch (error) {
                     console.log(error.message);
                 }
             },
         }),
-        // logOut: builder.query({
-        //     query: () => ({
-        //         url: 'logout',
-        //         method: 'GET',
-        //         credentials: 'include' as const,
-        //     }),
-        //     async onQueryStarted(arg, { queryFulfilled, dispatch }) {
-        //         try {
-        //             dispatch(userLoggedOut());
-        //         } catch (error: any) {
-        //             console.log(error.message);
-        //         }
-        //     },
-        // }),
+        socialAuth: builder.mutation({
+            query: ({ email, name, profilePicture }) => ({
+                url: 'social-auth',
+                method: 'POST',
+                body: {
+                    email,
+                    name,
+                    profilePicture,
+                },
+                credentials: 'include',
+            }),
+            async onQueryStarted(arg, { queryFulfilled, dispatch }) {
+                try {
+                    const result = await queryFulfilled;
+                    dispatch(
+                        userLoggedIn({
+                            accessToken: result.data.accessToken,
+                            user: result.data.user,
+                        }),
+                    );
+                } catch (error) {
+                    console.log(error.message);
+                }
+            },
+        }),
+        logOut: builder.query({
+            query: () => ({
+                url: 'logout',
+                method: 'GET',
+                credentials: 'include',
+            }),
+            async onQueryStarted(arg, { queryFulfilled, dispatch }) {
+                try {
+                    dispatch(userLoggedOut());
+                } catch (error) {
+                    console.log(error.message);
+                }
+            },
+        }),
     }),
 });
 
-export const {
-    useRegisterMutation,
-    useActivationMutation,
-    useLoginMutation,
-    useSocialAuthMutation,
-    useLogOutQuery,
-} = authApi;
+export const { useRegisterMutation, useActivationMutation, useLoginMutation, useSocialAuthMutation, useLogOutQuery } =
+    authApi;

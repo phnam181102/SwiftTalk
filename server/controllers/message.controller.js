@@ -169,11 +169,13 @@ const messageController = {
     addImageMessage: async (req, res, next) => {
         try {
             if (req.file) {
+                const { from, to } = req.query;
+
                 const date = Date.now();
-                let fileName = 'uploads/images/' + date + req.file.originalName;
+
+                let fileName = 'uploads/images/' + date + from;
                 renameSync(req.file.path, fileName);
                 const prisma = getPrismaInstance();
-                const { from, to } = req.query;
 
                 if (from && to) {
                     const message = await prisma.messages.create({
@@ -200,12 +202,13 @@ const messageController = {
     addAudioMessage: async (req, res, next) => {
         try {
             if (req.file) {
-                console.log(req.file);
+                const { from, to } = req.query;
+
                 const date = Date.now();
-                let fileName = 'uploads/recordings/' + date + req.file.originalName;
+
+                let fileName = 'uploads/recordings/' + date + from;
                 renameSync(req.file.path, fileName);
                 const prisma = getPrismaInstance();
-                const { from, to } = req.query;
 
                 if (from && to) {
                     const message = await prisma.messages.create({

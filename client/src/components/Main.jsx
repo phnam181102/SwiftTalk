@@ -74,18 +74,18 @@ function Main() {
     }, [socket.current]);
 
     useEffect(() => {
-        if (user?.id) {
-            const userId = user.id;
-            socket.current.emit('get-initial-contacts', { userId });
-        }
+            if (user?.id) {
+                const userId = user.id;
+                socket.current.emit('get-initial-contacts', { userId });
+            }
 
-        socket.current.on('get-initial-contacts-response', (userId) => {
-            refetchInitialContact();
-        });
+            socket.current.on('get-initial-contacts-response', (userId) => {
+                refetchInitialContact();
+            });
 
-        return () => {
-            socket.current.off('get-initial-contacts-response');
-        };
+            return () => {
+                socket.current.off('get-initial-contacts-response');
+            };
     }, [socket.current]);
 
     return (

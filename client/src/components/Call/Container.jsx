@@ -31,9 +31,7 @@ export function getUrlParams(url = window.location.href) {
 function Container({ socket, data }) {
     const { user } = useSelector((state) => state.auth);
     const [callAccepted, setCallAccepted] = useState(false);
-    const [zgVar, setZgVar] = useState(undefined);
-    const [localStream, setLocalStream] = useState(undefined);
-    const [publishStream, setPublishStream] = useState(undefined);
+    const [isInRoom, setIsInRoom] = useState(false);
     const dispatch = useDispatch();
 
     const { data: token } = useGetGenerateTokenUserQuery({ userId: user?.id });
@@ -58,31 +56,34 @@ function Container({ socket, data }) {
         // Create instance object from Kit Token.
         const zp = ZegoUIKitPrebuilt.create(kitToken);
 
-        zp.joinRoom({
-            container: element,
-            showPreJoinView: false,
-            sharedLinks: [
-                {
-                    name: 'Personal link',
-                    url:
-                        window.location.protocol +
-                        '//' +
-                        window.location.host +
-                        window.location.pathname +
-                        '?roomID=' +
-                        roomID,
+        if (!isInRoom) {
+            zp.joinRoom({
+                container: element,
+                showPreJoinView: false,
+                sharedLinks: [
+                    {
+                        name: 'Personal link',
+                        url:
+                            window.location.protocol +
+                            '//' +
+                            window.location.host +
+                            window.location.pathname +
+                            '?roomID=' +
+                            roomID,
+                    },
+                ],
+                scenario: {
+                    mode: ZegoUIKitPrebuilt.OneONoneCall,
                 },
-            ],
-            scenario: {
-                mode: ZegoUIKitPrebuilt.OneONoneCall,
-            },
-            showTextChat: false,
-            showUserList: false,
-            // onLeaveRoom: () => {
-            //     zp.logoutRoom();
-            //     handleEndCall();
-            // },
-        });
+                showTextChat: false,
+                showUserList: false,
+                onLeaveRoom: () => {
+                    handleEndCall(zp);
+                },
+            });
+
+            setIsInRoom(true);
+        }
     };
 
     useEffect(() => {
@@ -94,13 +95,12 @@ function Container({ socket, data }) {
         }
     }, [token]);
 
-    const handleEndCall = () => {
+    const handleEndCall = (zp) => {
         const id = data.id;
 
-        if (zgVar && localStream && publishStream) {
-            zgVar.destroyStream(localStream);
-            zgVar.stopPublishingStream(publishStream);
-            zgVar.logoutRoom(data.roomId.toString());
+        if (zp) {
+            zp.destroy();
+            setIsInRoom(false);
         }
 
         if (data.callType === 'voice') {
@@ -117,26 +117,37 @@ function Container({ socket, data }) {
 
     return (
         <div className="border-1 w-full flex flex-col h-[100vh] overflow-hidden justify-center items-center text-white">
-            <div className="flex flex-col gap-3 items-center">
-                <span className="text-5xl">{data.name}</span>
-                <span className="text-lg">
-                    {callAccepted && data.callType !== 'video' ? 'On going call' : 'Calling'}
-                </span>
-            </div>
-            {(!callAccepted || data.callType === 'audio') && (
-                <div className="my-8">
-                    <Image src="/default_avatar.png" alt="Avatar" width={300} height={300} className="rounded-full" />
+            {/* {!isInRoom ? (
+                <>
+                    <div className="flex flex-col gap-3 items-center">
+                        <span className="text-5xl">{data.name}</span>
+                        <span className="text-lg">
+                            {callAccepted && data.callType !== 'video' ? 'On going call' : 'Calling'}
+                        </span>
+                    </div>
+                    {(!callAccepted || data.callType === 'audio') && (
+                        <div className="my-8">
+                            <Image
+                                src="/default_avatar.png"
+                                alt="Avatar"
+                                width={300}
+                                height={300}
+                                className="rounded-full"
+                            />
+                        </div>
+                    )}
+                    <button
+                        className="h-16 w-16 bg-red-600 flex items-center justify-center rounded-full hover:bg-red-500 cursor-pointer"
+                        // onClick={handleEndCall}
+                    >
+                        <MdOutlineCallEnd className="text-3xl" />
+                    </button>
+                </>
+            ) : ( */}
+                <div className="my-5 relative w-full h-full" id="remote-video" ref={myMeeting}>
+                    <div className="absolute bottom-5 right-5" id="local-audio"></div>
                 </div>
-            )}
-            <div className="my-5 relative" id="remote-video" ref={myMeeting}>
-                <div className="absolute bottom-5 right-5" id="local-audio"></div>
-            </div>
-            <button
-                className="h-16 w-16 bg-red-600 flex items-center justify-center rounded-full hover:bg-red-500 cursor-pointer"
-                onClick={handleEndCall}
-            >
-                <MdOutlineCallEnd className="text-3xl" />
-            </button>
+            {/* )} */}
         </div>
     );
 }

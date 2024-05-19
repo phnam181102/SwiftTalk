@@ -75,6 +75,7 @@ function Main() {
     }, [socket.current]);
 
     useEffect(() => {
+        if (user && socket.current) {
             if (user?.id) {
                 const userId = user.id;
                 socket.current.emit('get-initial-contacts', { userId });
@@ -87,6 +88,7 @@ function Main() {
             return () => {
                 socket.current.off('get-initial-contacts-response');
             };
+        }
     }, [socket.current]);
 
     return (

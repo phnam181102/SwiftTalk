@@ -21,7 +21,6 @@ export const refreshTokenOptions = {
 };
 
 export const sendToken = (user, statusCode, res) => {
-    console.log('HIIIII', user);
     const accessToken = generateAccessToken(user.id);
     const refreshToken = generateRefreshToken(user.id);
 
@@ -32,8 +31,6 @@ export const sendToken = (user, statusCode, res) => {
 
     res.cookie('access_token', accessToken, accessTokenOptions);
     res.cookie('refresh_token', refreshToken, refreshTokenOptions);
-
-    console.log(user, accessToken);
 
     res.status(statusCode).json({
         success: true,

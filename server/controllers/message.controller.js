@@ -4,7 +4,6 @@ import { renameSync } from 'fs';
 
 const messageController = {
     addMessage: async (req, res, next) => {
-        console.log({ req });
         try {
             const prisma = getPrismaInstance();
             const { message, from, to } = req.body;

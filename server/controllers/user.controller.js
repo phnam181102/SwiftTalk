@@ -1,9 +1,12 @@
+import jwt from 'jsonwebtoken';
+import { renameSync, unlinkSync } from 'fs';
+
 import { CatchAsyncError } from '../middlewares/catchAsyncErrors.js';
 import ErrorHandler from '../exceptions/ErrorHandler.js';
 import { prismaClient } from '../index.js';
 import { generateToken04 } from '../utils/TokenGenerator.js';
+import { accessTokenOptions, refreshTokenOptions } from '../utils/Jwt.js';
 
-// get all users
 export const getAllUsers = CatchAsyncError(async (req, res, next) => {
     try {
         const { userId } = req.params; // Lấy userId từ params
@@ -21,6 +24,7 @@ export const getAllUsers = CatchAsyncError(async (req, res, next) => {
                 id: true,
                 username: true,
                 name: true,
+                profilePicture: true,
             },
         });
 
@@ -38,6 +42,112 @@ export const getAllUsers = CatchAsyncError(async (req, res, next) => {
         });
     } catch (error) {
         return next(new ErrorHandler(error.message, 500));
+    }
+});
+
+export const updateProfile = CatchAsyncError(async (req, res, next) => {
+    try {
+        const { userId } = req.params;
+        const { name, username, email } = req.body;
+
+        const user = await prismaClient.user.findUnique({
+            where: {
+                id: userId,
+            },
+        });
+
+        if (!user) {
+            return next(new ErrorHandler('User not found', 404));
+        }
+
+        let fileName;
+        if (req.file) {
+            // Nếu user có ảnh cũ, xóa ảnh đó
+            if (user.profilePicture) {
+                try {
+                    unlinkSync(user.profilePicture);
+                } catch (error) {
+                    console.error(`Failed to delete old avatar: ${error.message}`);
+                    return next(new ErrorHandler('Failed to delete old avatar', 500));
+                }
+            }
+
+            const date = Date.now();
+            fileName = 'uploads/images/' + 'avatar' + userId + date;
+            renameSync(req.file.path, fileName);
+        }
+
+        const updatedUser = await prismaClient.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                name,
+                username,
+                email,
+                profilePicture: fileName || user.profilePicture,
+            },
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "User's profile updated successfully",
+            user: {
+                id: updatedUser.id,
+                name: updatedUser.name,
+                username: updatedUser.username,
+                email: updatedUser.email,
+                profilePicture: updatedUser.profilePicture,
+            },
+        });
+    } catch (error) {
+        return next(new ErrorHandler(error.message, 400));
+    }
+});
+
+export const getUserInfo = CatchAsyncError(async (req, res, next) => {
+    try {
+        const { userId } = req.params;
+        let user = await prismaClient.user.findUnique({
+            where: {
+                id: userId,
+            },
+        });
+
+        res.status(201).json({
+            success: true,
+            user,
+        });
+    } catch (error) {
+        return next(new ErrorHandler(error.message, 400));
+    }
+});
+
+export const updateAccessToken = CatchAsyncError(async (req, res, next) => {
+    try {
+        const refresh_token = req.cookies.refresh_token;
+        const errMessage = 'Could not refresh token';
+
+        const decoded = jwt.verify(refresh_token, process.env.REFRESH_TOKEN);
+        if (!decoded) return next(new ErrorHandler(errMessage, 400));
+
+        const user = decoded;
+
+        const accessToken = jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN, { expiresIn: '1d' });
+
+        const refreshToken = jwt.sign({ id: user._id }, process.env.REFRESH_TOKEN, {
+            expiresIn: '3d',
+        });
+
+        req.user = user;
+
+        res.cookie('token', accessToken, accessTokenOptions);
+        res.cookie('refresh_token', refreshToken, refreshTokenOptions);
+
+        next();
+    } catch (error) {
+        console.log('ERROR: updateAccessToken');
+        return next(new ErrorHandler(error.message, 400));
     }
 });
 

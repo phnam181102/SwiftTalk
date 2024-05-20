@@ -1,6 +1,8 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { HOST } from '@/utils/ApiRoutes';
+
 import { changeCurrentChatUser } from '@/redux/user/userSlice';
 import { showAllContactsPage } from '@/redux/user/userSlice';
 import Avatar from '../common/Avatar';
@@ -21,6 +23,7 @@ function ChatListItem({ data, isContactsPage = false }) {
                     user: {
                         name: data.name,
                         email: data.email,
+                        profilePicture: data.profilePicture,
                         id: user.id === data.senderId ? data.receiverId : data.senderId,
                     },
                 }),
@@ -34,7 +37,11 @@ function ChatListItem({ data, isContactsPage = false }) {
     return (
         <div className="flex cursor-pointer items-center hover:bg-gray" onClick={handleContactClick}>
             <div className="min-w-fit px-5 pt-3 pb-1">
-                <Avatar type="lg" image={'/default_avatar.png'} />
+                {console.log(data?.profilePicture)}
+                <Avatar
+                    type="lg"
+                    image={data?.profilePicture ? `${HOST}/${data.profilePicture}` : '/default_avatar.png'}
+                />
             </div>
 
             <div className="min-h-full flex flex-col justify-center pr-2  w-full mr-6">
@@ -47,7 +54,7 @@ function ChatListItem({ data, isContactsPage = false }) {
                         <div>
                             <span
                                 className={`${
-                                    !data.totalUnreadMessages > 0 ? 'text-gray' : 'text-primary-300'
+                                    !data.totalUnreadMessages > 0 ? 'text-white' : 'text-primary-300'
                                 } text-sm`}
                             >
                                 {calculateTime(data.createdAt)}

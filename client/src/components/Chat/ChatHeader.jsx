@@ -1,10 +1,12 @@
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+
 import { IoVideocamOutline } from 'react-icons/io5';
 import { BsThreeDotsVertical, BsTelephone } from 'react-icons/bs';
 import { FiSearch } from 'react-icons/fi';
 
+import { HOST } from '@/utils/ApiRoutes';
 import Avatar from '../common/Avatar';
-import { useDispatch, useSelector } from 'react-redux';
 import { setMessageSearch, setVideoCall, setVoiceCall } from '../../redux/user/userSlice';
 
 function ChatHeader() {
@@ -44,7 +46,14 @@ function ChatHeader() {
     return (
         <div className="h-20 px-5 py-4 flex justify-between shadow-[0_8px_24px_0_rgba(149,157,165,0.2)] items-center bg-white z-10">
             <div className="flex items-center justify-center gap-6">
-                <Avatar type="sm" image={'/default_avatar.png'} />
+                <Avatar
+                    type="sm"
+                    image={
+                        currentChatUser?.profilePicture
+                            ? `${HOST}/${currentChatUser.profilePicture}`
+                            : '/default_avatar.png'
+                    }
+                />
 
                 <div className="flex flex-col ">
                     <span className="text-dark text-xl leading-5">{currentChatUser?.name}</span>

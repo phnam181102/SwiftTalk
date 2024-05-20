@@ -4,7 +4,7 @@ export const messageApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         addMessage: builder.mutation({
             query: ({ from, to, message }) => ({
-                url: 'add-message',
+                url: 'message/add-message',
                 method: 'POST',
                 body: { from, to, message },
                 credentials: 'include',
@@ -12,14 +12,14 @@ export const messageApi = apiSlice.injectEndpoints({
         }),
         getMessages: builder.query({
             query: ({ from, to }) => ({
-                url: `get-messages/${from}/${to}`,
+                url: `message/get-messages/${from}/${to}`,
                 method: 'GET',
                 credentials: 'include',
             }),
         }),
         getInitialContact: builder.query({
             query: ({ from }) => ({
-                url: `get-initial-contacts/${from}`,
+                url: `message/get-initial-contacts/${from}`,
                 method: 'GET',
                 credentials: 'include',
             }),
@@ -27,7 +27,7 @@ export const messageApi = apiSlice.injectEndpoints({
         addImageMessage: builder.mutation({
             query: ({ formData, from, to }) => {
                 return {
-                    url: `add-image-message`,
+                    url: `message/add-image-message`,
                     method: 'POST',
                     credentials: 'include',
                     body: formData,
@@ -41,7 +41,7 @@ export const messageApi = apiSlice.injectEndpoints({
         addAudioMessage: builder.mutation({
             query: ({ formData, from, to }) => {
                 return {
-                    url: `add-audio-message`,
+                    url: `message/add-audio-message`,
                     method: 'POST',
                     credentials: 'include',
                     body: formData,

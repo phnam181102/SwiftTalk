@@ -28,9 +28,9 @@ app.use(
 app.use(express.json());
 
 // Routes
-app.use('/api/v1/', authRouter);
-app.use('/api/v1/', userRouter);
-app.use('/api/v1/', messageRouter);
+app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/user', userRouter);
+app.use('/api/v1/message', messageRouter);
 
 app.use('/uploads/images', express.static('uploads/images'));
 app.use('/uploads/recordings', express.static('uploads/recordings'));

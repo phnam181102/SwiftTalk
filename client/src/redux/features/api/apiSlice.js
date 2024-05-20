@@ -9,14 +9,14 @@ export const apiSlice = createApi({
     endpoints: (builder) => ({
         refreshToken: builder.query({
             query: (data) => ({
-                url: 'refresh',
+                url: 'user/refresh',
                 method: 'GET',
                 credentials: 'include',
             }),
         }),
         loadUser: builder.query({
-            query: (data) => ({
-                url: 'me',
+            query: (userId) => ({
+                url: `user/me/${userId}`,
                 method: 'GET',
                 credentials: 'include',
             }),
@@ -25,7 +25,7 @@ export const apiSlice = createApi({
                     const result = await queryFulfilled;
                     dispatch(
                         userLoggedIn({
-                            token: result.data.token,
+                            accessToken: result.data.accessToken,
                             user: result.data.user,
                         }),
                     );

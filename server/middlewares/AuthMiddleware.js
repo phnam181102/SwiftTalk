@@ -5,7 +5,7 @@ import { prismaClient } from '../index.js';
 const authMiddleware = async (req, res, next) => {
     const token = req.cookies.token;
     if (!token) {
-        next(new UnauthorizedException('Unauthorized1', 401));
+        next(new UnauthorizedException('Unauthorized', 401));
     }
 
     try {
@@ -20,6 +20,7 @@ const authMiddleware = async (req, res, next) => {
         req.user = user;
         next();
     } catch (error) {
+        console.log('ERROR: authMiddleware');
         next(new UnauthorizedException('Unauthorized', 401));
     }
 };

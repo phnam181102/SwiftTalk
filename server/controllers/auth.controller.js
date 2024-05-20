@@ -31,14 +31,14 @@ const authController = {
 
     socialAuth: CatchAsyncError(async (req, res, next) => {
         try {
-            const { email, name, profilePicture } = req.body;
+            const { email, name } = req.body;
 
             let user = await prismaClient.user.findFirst({ where: { email } });
 
             if (!user) {
                 const username = email.split('@')[0];
                 user = await prismaClient.user.create({
-                    data: { name, email, username, profilePicture },
+                    data: { name, email, username },
                 });
                 sendToken(user, 200, res);
             } else {

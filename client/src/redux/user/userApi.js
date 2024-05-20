@@ -4,14 +4,22 @@ export const userApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getAllUser: builder.query({
             query: ({ userId }) => ({
-                url: `get-users/${userId}`,
+                url: `user/get-users/${userId}`,
                 method: 'GET',
                 credentials: 'include',
             }),
         }),
+        updateProfile: builder.mutation({
+            query: ({ formData, userId }) => ({
+                url: `user/update-profile/${userId}`,
+                method: 'PUT',
+                credentials: 'include',
+                body: formData,
+            }),
+        }),
         getGenerateTokenUser: builder.query({
             query: ({ userId }) => ({
-                url: `generate-token-user/${userId}`,
+                url: `user/generate-token-user/${userId}`,
                 method: 'GET',
                 credentials: 'include',
             }),
@@ -19,4 +27,4 @@ export const userApi = apiSlice.injectEndpoints({
     }),
 });
 
-export const { useGetAllUserQuery, useGetGenerateTokenUserQuery } = userApi;
+export const { useGetAllUserQuery, useGetGenerateTokenUserQuery, useUpdateProfileMutation } = userApi;

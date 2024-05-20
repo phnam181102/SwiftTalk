@@ -37,6 +37,7 @@ function VoiceMessage({ message }) {
             waveForm.current.on('finish', () => {
                 setIsPlaying(false);
             });
+            console.log('1', waveForm.current);
         }
 
         return () => {
@@ -49,6 +50,7 @@ function VoiceMessage({ message }) {
         const audio = new Audio(audioUrl);
         setAudioMessage(audio);
         if (waveForm.current) {
+            console.log('2', waveForm.current);
             // waveForm.current?.load(audioUrl);
             waveForm.current.on('ready', () => {
                 setTotalDuration(waveForm.current.getDuration());
@@ -72,15 +74,12 @@ function VoiceMessage({ message }) {
 
     const handlePlayAudio = () => {
         if (audioMessage) {
-            // waveForm.current.stop();
-            // waveForm.current.play();
             audioMessage.play();
             setIsPlaying(true);
         }
     };
 
     const handlePauseAudio = () => {
-        // waveForm.current.stop();
         audioMessage.pause();
         setIsPlaying(false);
     };
@@ -91,9 +90,6 @@ function VoiceMessage({ message }) {
                 message.senderId === currentChatUser.id ? 'bg-primary-100 text-dark' : 'bg-primary-300 text-light'
             }`}
         >
-            {/* <div>
-                <Avatar type="lg" image={currentChatUser?.profilePicture} />
-            </div> */}
             <div className="cursor-pointer text-xl">
                 {!isPlaying ? <FaPlay onClick={handlePlayAudio} /> : <FaStop onClick={handlePauseAudio} />}
             </div>

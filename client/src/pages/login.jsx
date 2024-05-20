@@ -134,7 +134,7 @@ function Login() {
 
                             <div className="w-full relative ">
                                 <HiOutlineMail
-                                    className="absolute bottom-[15px] left-3 z-1 cursor-pointer text-gray-500"
+                                    className="absolute bottom-[12px] left-3 z-1 cursor-pointer text-gray-500"
                                     size={20}
                                 />
                                 <Input
@@ -152,7 +152,7 @@ function Login() {
                             {variant === 'REGISTER' && (
                                 <div className="w-full relative ">
                                     <FaRegUser
-                                        className="absolute bottom-4 left-3 z-1 cursor-pointer text-gray-500"
+                                        className="absolute bottom-[15px] left-3 z-1 cursor-pointer text-gray-500"
                                         size={18}
                                     />
                                     <Input
@@ -169,7 +169,7 @@ function Login() {
                             {variant === 'REGISTER' && (
                                 <div className="w-full relative ">
                                     <HiOutlineAtSymbol
-                                        className="absolute bottom-[15px] left-3 z-1 cursor-pointer text-gray-500"
+                                        className="absolute bottom-[12px] left-3 z-1 cursor-pointer text-gray-500"
                                         size={20}
                                     />
                                     <Input
@@ -186,7 +186,7 @@ function Login() {
 
                             <div className="w-full mt-4 relative mb-1">
                                 <MdLockOutline
-                                    className="absolute bottom-4 left-3 z-1 cursor-pointer text-gray-500"
+                                    className="absolute bottom-[12px] left-3 z-1 cursor-pointer text-gray-500"
                                     size={20}
                                 />
                                 <Input

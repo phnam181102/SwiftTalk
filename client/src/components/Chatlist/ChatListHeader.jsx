@@ -5,7 +5,7 @@ import { signOut } from 'next-auth/react';
 
 import { FiEdit } from 'react-icons/fi';
 import { LuLogOut } from 'react-icons/lu';
-import { FaRegUser, FaCameraRotate } from 'react-icons/fa6';
+import { FaRegUser, FaCameraRotate, FaUserGroup } from 'react-icons/fa6';
 import { HiOutlineMail, HiOutlineAtSymbol } from 'react-icons/hi';
 
 import { HOST } from '@/utils/ApiRoutes';
@@ -22,11 +22,13 @@ import Button from '../common/Button';
 import PhotoPicker from '../common/PhotoPicker';
 import { createFormData } from '../../utils/createFormData';
 import toast from 'react-hot-toast';
+import ModalGroup from '../Modal/ModalGroup';
 
 function ChatListHeader() {
     const user = useSelector((state) => state.auth.user);
     const dispatch = useDispatch();
     const [showModal, setShowModal] = useState(false);
+    const [showModalAddGroup, setShowModalAddGroup] = useState(false);
     const [logout, setLogout] = useState(false);
     const [grabPhoto, setGrabPhoto] = useState(false);
     const [imageFile, setImageFile] = useState(null);
@@ -126,6 +128,10 @@ function ChatListHeader() {
         }
     }, [grabPhoto]);
 
+    const handleModalCreateGroup = () => {
+        setShowModalAddGroup(!showModalAddGroup);
+    };
+
     return (
         <div className="px-6 py-5 flex justify-between items-center">
             <div className="flex gap-2 items-center cursor-pointer" onClick={handleShowModal}>
@@ -137,6 +143,11 @@ function ChatListHeader() {
             </div>
 
             <div className="flex gap-6">
+                <FaUserGroup
+                    className="text-light cursor-pointer text-xl"
+                    title="Group"
+                    onClick={handleModalCreateGroup}
+                />
                 <FiEdit
                     className="text-light cursor-pointer text-xl"
                     title="New Chat"
@@ -224,6 +235,8 @@ function ChatListHeader() {
                     </div>
                 </form>
             </Modal>
+
+            <ModalGroup showModal={showModalAddGroup} setShowModal={setShowModalAddGroup} />
 
             {grabPhoto && <PhotoPicker onChange={photoPickerChange} />}
         </div>

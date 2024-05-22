@@ -7,6 +7,7 @@ import {
     updateAccessToken,
     getUserInfo,
     updateProfile,
+    findUserByKeyword,
 } from '../controllers/user.controller.js';
 import authMiddleware from '../middlewares/AuthMiddleware.js';
 
@@ -19,5 +20,6 @@ userRouter.put('/update-profile/:userId', uploadImage.single('image'), updatePro
 userRouter.get('/generate-token-user/:userId', generateTokenUser);
 userRouter.get('/me/:userId', updateAccessToken, [authMiddleware], getUserInfo);
 userRouter.get('/refresh', updateAccessToken);
+userRouter.get('/', findUserByKeyword);
 
 export default userRouter;

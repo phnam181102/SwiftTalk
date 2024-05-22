@@ -167,3 +167,35 @@ export const generateTokenUser = CatchAsyncError(async (req, res, next) => {
         return next(new ErrorHandler(error.message, 500));
     }
 });
+
+export const findUserByKeyword = CatchAsyncError(async (req, res, next) => {
+    try {
+        let keyword = req.query.search;
+
+        const users = await prismaClient.user.findMany({
+            // where: {
+            //     id: {
+            //         not: req.user.id, // Loại bỏ người dùng có userId cụ thể
+            //     },
+            // },
+            orderBy: {
+                name: 'asc',
+            },
+            select: {
+                id: true,
+                username: true,
+                name: true,
+                profilePicture: true,
+            },
+        });
+
+        console.log('sssss: ', { users });
+
+        res.status(201).json({
+            success: true,
+            users: users,
+        });
+    } catch (error) {
+        return next(new ErrorHandler(error.message, 500));
+    }
+});

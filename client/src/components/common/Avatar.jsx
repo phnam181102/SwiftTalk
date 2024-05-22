@@ -5,6 +5,11 @@ function Avatar({ type, image, setImage }) {
     return (
         <>
             <div className="flex items-center justify-center">
+                {type === 'xsm' && (
+                    <div className="relative h-7 w-7">
+                        <Image src={image} alt="Avatar" className="rounded-full" fill sizes="100px" />
+                    </div>
+                )}
                 {type === 'sm' && (
                     <div className="relative h-10 w-10">
                         <Image src={image} alt="Avatar" className="rounded-full" fill sizes="100px" />

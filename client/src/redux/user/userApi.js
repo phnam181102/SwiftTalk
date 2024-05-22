@@ -24,7 +24,15 @@ export const userApi = apiSlice.injectEndpoints({
                 credentials: 'include',
             }),
         }),
+        findUserByKeyword: builder.query({
+            query: () => ({
+                url: `user`,
+                method: 'GET',
+                credentials: 'include',
+            }),
+        }),
     }),
 });
 
-export const { useGetAllUserQuery, useGetGenerateTokenUserQuery, useUpdateProfileMutation } = userApi;
+export const { useGetAllUserQuery, useGetGenerateTokenUserQuery, useUpdateProfileMutation, useFindUserByKeywordQuery } =
+    userApi;

@@ -108,3 +108,11 @@ body {
         opacity: 0;
     }
 }
+
+.zego_model_parent {
+    background-color: #202022 !important;
+}
+
+.zego_model_parent video {
+    background-color: #202022;
+}

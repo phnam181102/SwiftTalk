@@ -1,18 +1,37 @@
+'use client';
+
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
 
 import { MdOutlineCallEnd } from 'react-icons/md';
 import { endCall } from '../../redux/user/userSlice';
 
 import { useGetGenerateTokenUserQuery } from '@/redux/user/userApi';
 
+function randomID(len) {
+    let result = '';
+    if (result) return result;
+    var chars = '12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP',
+        maxPos = chars.length,
+        i;
+    len = len || 5;
+    for (i = 0; i < len; i++) {
+        result += chars.charAt(Math.floor(Math.random() * maxPos));
+    }
+    return result;
+}
+
+export function getUrlParams(url = window.location.href) {
+    let urlStr = url.split('?')[1];
+    return new URLSearchParams(urlStr);
+}
+
 function Container({ socket, data }) {
     const { user } = useSelector((state) => state.auth);
     const [callAccepted, setCallAccepted] = useState(false);
-    const [zgVar, setZgVar] = useState(undefined);
-    const [localStream, setLocalStream] = useState(undefined);
-    const [publishStream, setPublishStream] = useState(undefined);
+    const [isInRoom, setIsInRoom] = useState(false);
     const dispatch = useDispatch();
 
     const { data: token } = useGetGenerateTokenUserQuery({ userId: user?.id });
@@ -27,81 +46,61 @@ function Container({ socket, data }) {
         }
     }, [data]);
 
+    const roomID = 'YKCcT';
+    let myMeeting = async (element) => {
+        // generate Kit Token
+        const appID = process.env.NEXT_PUBLIC_ZEGO_APP_ID;
+        const serverSecret = process.env.NEXT_PUBLIC_ZEGO_SERVER_ID;
+        const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(appID, serverSecret, roomID, randomID(5), user.name);
+
+        // Create instance object from Kit Token.
+        const zp = ZegoUIKitPrebuilt.create(kitToken);
+
+        if (!isInRoom) {
+            zp.joinRoom({
+                container: element,
+                showPreJoinView: false,
+                sharedLinks: [
+                    {
+                        name: 'Personal link',
+                        url:
+                            window.location.protocol +
+                            '//' +
+                            window.location.host +
+                            window.location.pathname +
+                            '?roomID=' +
+                            roomID,
+                    },
+                ],
+                scenario: {
+                    mode: ZegoUIKitPrebuilt.OneONoneCall,
+                },
+                showTextChat: false,
+                showUserList: false,
+                onLeaveRoom: () => {
+                    handleEndCall(zp);
+                },
+            });
+
+            setIsInRoom(true);
+        }
+    };
+
     useEffect(() => {
         const startCall = async () => {
-            import('zego-express-engine-webrtc').then(async ({ ZegoExpressEngine }) => {
-                const zg = new ZegoExpressEngine(
-                    process.env.NEXT_PUBLIC_ZEGO_APP_ID,
-                    process.env.NEXT_PUBLIC_ZEGO_SERVER_ID,
-                );
-                setZgVar(zg);
-
-                zg.on('roomStreamUpdate', async (roomId, updateType, streamList, extendedData) => {
-                    if (updateType === 'ADD') {
-                        const rmVideo = document.getElementById('remote-video');
-                        const vd = document.createElement(data.callType === 'video' ? 'video' : 'audio');
-                        vd.id = streamList[0].streamID;
-                        vd.autoplay = true;
-                        vd.playsInline = true;
-                        vd.muted = false;
-                        if (rmVideo) {
-                            rmVideo.appendChild(vd);
-                        }
-                        zg.startPlayingStream(streamList[0].streamID, {
-                            audio: true,
-                            video: true,
-                        }).then((stream) => vd.srcObject === stream);
-                    } else if (updateType === 'DELETE' && zg && localStream && streamList[0].streamID) {
-                        zg.destroyStream(localStream);
-                        zg.stopPublishingStream(streamList[0].streamID);
-                        zg.logoutRoom(data.roomId.toString());
-                        dispatch(endCall());
-                    }
-                });
-
-                await zg.loginRoom(
-                    data.roomId.toString(),
-                    token,
-                    { userID: user.id.toString(), userName: user.name },
-                    { userUpdate: true },
-                );
-
-                const localStream = await zg.createStream({
-                    camera: {
-                        audio: true,
-                        video: data.callType === 'video' ? true : false,
-                    },
-                });
-                const localVideo = document.getElementById('local-audio');
-                const videoElement = document.createElement(data.callType === 'video' ? 'video' : 'audio');
-                videoElement.id = 'video-local-zego';
-                videoElement.className = 'h-28 w-32';
-                videoElement.autoplay = true;
-                videoElement.muted = false;
-
-                videoElement.playsInline = true;
-
-                localVideo.appendChild(videoElement);
-                const td = document.getElementById('video-local-zego');
-                td.srcObject = localStream;
-                const streamId = '123' + Date.now();
-                setPublishStream(streamId);
-                setLocalStream(localStream);
-                zg.startPublishingStream(streamId, localStream);
-            });
+            myMeeting();
         };
         if (token) {
             startCall();
         }
     }, [token]);
 
-    const handleEndCall = () => {
+    const handleEndCall = (zp) => {
         const id = data.id;
 
-        if (zgVar && localStream && publishStream) {
-            zgVar.destroyStream(localStream);
-            zgVar.stopPublishingStream(publishStream);
-            zgVar.logoutRoom(data.roomId.toString());
+        if (zp) {
+            zp.destroy();
+            setIsInRoom(false);
         }
 
         if (data.callType === 'voice') {
@@ -118,26 +117,37 @@ function Container({ socket, data }) {
 
     return (
         <div className="border-1 w-full flex flex-col h-[100vh] overflow-hidden justify-center items-center text-white">
-            <div className="flex flex-col gap-3 items-center">
-                <span className="text-5xl">{data.name}</span>
-                <span className="text-lg">
-                    {callAccepted && data.callType !== 'video' ? 'On going call' : 'Calling'}
-                </span>
-            </div>
-            {(!callAccepted || data.callType === 'audio') && (
-                <div className="my-8">
-                    <Image src="/default_avatar.png" alt="Avatar" width={300} height={300} className="rounded-full" />
+            {/* {!isInRoom ? (
+                <>
+                    <div className="flex flex-col gap-3 items-center">
+                        <span className="text-5xl">{data.name}</span>
+                        <span className="text-lg">
+                            {callAccepted && data.callType !== 'video' ? 'On going call' : 'Calling'}
+                        </span>
+                    </div>
+                    {(!callAccepted || data.callType === 'audio') && (
+                        <div className="my-8">
+                            <Image
+                                src="/default_avatar.png"
+                                alt="Avatar"
+                                width={300}
+                                height={300}
+                                className="rounded-full"
+                            />
+                        </div>
+                    )}
+                    <button
+                        className="h-16 w-16 bg-red-600 flex items-center justify-center rounded-full hover:bg-red-500 cursor-pointer"
+                        // onClick={handleEndCall}
+                    >
+                        <MdOutlineCallEnd className="text-3xl" />
+                    </button>
+                </>
+            ) : ( */}
+                <div className="my-5 relative w-full h-full" id="remote-video" ref={myMeeting}>
+                    <div className="absolute bottom-5 right-5" id="local-audio"></div>
                 </div>
-            )}
-            <div className="my-5 relative" id="remote-video">
-                <div className="absolute bottom-5 right-5" id="local-audio"></div>
-            </div>
-            <button
-                className="h-16 w-16 bg-red-600 flex items-center justify-center rounded-full hover:bg-red-500 cursor-pointer"
-                onClick={handleEndCall}
-            >
-                <MdOutlineCallEnd className="text-3xl" />
-            </button>
+            {/* )} */}
         </div>
     );
 }

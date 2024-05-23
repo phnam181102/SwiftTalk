@@ -158,10 +158,12 @@ export const generateTokenUser = CatchAsyncError(async (req, res, next) => {
         const userId = req.params.userId;
         const effectiveTime = 3600;
         const payload = '';
+        console.log('LOG', appId, serverSecret, userId);
         if (appId && serverSecret && userId) {
             const token = generateToken04(appId, userId, serverSecret, effectiveTime, payload);
-            res.json({ token });
+            return res.json({ token });
         }
+
         return next(new ErrorHandler('User id, app id and server secret is required.', 400));
     } catch (error) {
         return next(new ErrorHandler(error.message, 500));

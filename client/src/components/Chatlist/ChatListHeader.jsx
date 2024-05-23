@@ -6,11 +6,12 @@ import { signOut } from 'next-auth/react';
 import { FiEdit } from 'react-icons/fi';
 import { LuLogOut } from 'react-icons/lu';
 import { FaRegUser, FaCameraRotate } from 'react-icons/fa6';
+import { BiConversation } from 'react-icons/bi';
 import { HiOutlineMail, HiOutlineAtSymbol } from 'react-icons/hi';
 
 import { HOST } from '@/utils/ApiRoutes';
 
-import { useUpdateInfoMutation, useUpdateAvatarMutation, useUpdateProfileMutation } from '@/redux/user/userApi';
+import { useUpdateProfileMutation } from '@/redux/user/userApi';
 import { useLoadUserQuery } from '@/redux/features/api/apiSlice';
 import Avatar from '../common/Avatar';
 import { showAllContactsPage } from '@/redux/user/userSlice';
@@ -22,11 +23,14 @@ import Button from '../common/Button';
 import PhotoPicker from '../common/PhotoPicker';
 import { createFormData } from '../../utils/createFormData';
 import toast from 'react-hot-toast';
+import { AiOutlineUsergroupAdd } from 'react-icons/ai';
+import AddGroup from '../common/AddGroup';
 
 function ChatListHeader() {
     const user = useSelector((state) => state.auth.user);
     const dispatch = useDispatch();
-    const [showModal, setShowModal] = useState(false);
+    const [showUpdateProfileModal, setShowUpdateProfileModal] = useState(false);
+    const [showAddGroupModal, setShowAddGroupModal] = useState(false);
     const [logout, setLogout] = useState(false);
     const [grabPhoto, setGrabPhoto] = useState(false);
     const [imageFile, setImageFile] = useState(null);
@@ -38,7 +42,7 @@ function ChatListHeader() {
         email: user.email,
     });
 
-    const { data: loadedUser } = useLoadUserQuery(user.id, { skip: !loadUser });
+    const {} = useLoadUserQuery(user.id, { skip: !loadUser });
     const {} = useLogOutQuery(undefined, {
         skip: !logout ? true : false,
     });
@@ -52,16 +56,13 @@ function ChatListHeader() {
     });
 
     const logOutHandler = async () => {
+        setLogout(true);
         await signOut();
     };
 
     const handleAllContactsPage = () => {
         dispatch(showAllContactsPage());
         dispatch(clearFilteredContacts());
-    };
-
-    const handleShowModal = () => {
-        setShowModal(!showModal);
     };
 
     const photoPickerChange = async (e) => {
@@ -78,7 +79,7 @@ function ChatListHeader() {
         setFormValue({ ...formValue, [id]: value });
     };
 
-    const onSubmit = async (data) => {
+    const onSubmitUpdateProfile = async (data) => {
         try {
             const formData = createFormData('image', imageFile);
             formData.append('name', data.name);
@@ -88,14 +89,18 @@ function ChatListHeader() {
             await updateProfile({ formData, userId: user.id });
 
             setImageFile(null);
-            setShowModal(false);
+            setShowUpdateProfileModal(false);
         } catch (error) {
             console.log(error.message);
         }
     };
 
-    const handleCloseModal = () => {
-        setShowModal(false);
+    const handleShowUpdateProfileModal = () => {
+        setShowUpdateProfileModal(true);
+    };
+
+    const handleCloseUpdateProfileModal = () => {
+        setShowUpdateProfileModal(false);
         setImageFile(null);
         setFormValue({
             name: user.name,
@@ -128,7 +133,7 @@ function ChatListHeader() {
 
     return (
         <div className="px-6 py-5 flex justify-between items-center">
-            <div className="flex gap-2 items-center cursor-pointer" onClick={handleShowModal}>
+            <div className="flex gap-3 items-center cursor-pointer" onClick={handleShowUpdateProfileModal}>
                 <Avatar
                     type="sm"
                     image={user.profilePicture ? `${HOST}/${user.profilePicture}` : '/default_avatar.png'}
@@ -142,12 +147,18 @@ function ChatListHeader() {
                     title="New Chat"
                     onClick={handleAllContactsPage}
                 />
-                <LuLogOut className="text-secondary cursor-pointer text-[1.28rem]" onClick={logOutHandler} />
+
+                <BiConversation
+                    className="text-light cursor-pointer"
+                    size={22}
+                    onClick={() => setShowAddGroupModal(true)}
+                />
+                <LuLogOut className="text-secondary cursor-pointer" size={21} onClick={logOutHandler} />
             </div>
 
-            <Modal showModal={showModal} setShowModal={setShowModal}>
+            <Modal showModal={showUpdateProfileModal} setShowModal={setShowUpdateProfileModal}>
                 <form
-                    onSubmit={handleSubmit(onSubmit)}
+                    onSubmit={handleSubmit(onSubmitUpdateProfile)}
                     className="text-dark w-96 flex flex-col items-center gap-5 p-3 select-none"
                 >
                     <div className="relative">
@@ -217,13 +228,15 @@ function ChatListHeader() {
                     </div>
 
                     <div className="w-full flex justify-end gap-3 mt-4">
-                        <Button onClick={handleCloseModal} secondary>
+                        <Button onClick={handleCloseUpdateProfileModal} secondary>
                             Cancel
                         </Button>
                         <Button type="submit">Update</Button>
                     </div>
                 </form>
             </Modal>
+
+            <AddGroup showModal={showAddGroupModal} setShowModal={setShowAddGroupModal} />
 
             {grabPhoto && <PhotoPicker onChange={photoPickerChange} />}
         </div>

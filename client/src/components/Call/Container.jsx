@@ -29,12 +29,12 @@ export function getUrlParams(url = window.location.href) {
 }
 
 function Container({ socket, data }) {
-    const { user } = useSelector((state) => state.auth);
+    const { user, token } = useSelector((state) => state.auth);
     const [callAccepted, setCallAccepted] = useState(false);
     const [isInRoom, setIsInRoom] = useState(false);
     const dispatch = useDispatch();
 
-    const { data: token } = useGetGenerateTokenUserQuery({ userId: user?.id });
+    // const { data: token } = useGetGenerateTokenUserQuery({ userId: user?.id });
 
     useEffect(() => {
         if (data.type === 'outgoing') {
@@ -144,9 +144,9 @@ function Container({ socket, data }) {
                     </button>
                 </>
             ) : ( */}
-                <div className="my-5 relative w-full h-full" id="remote-video" ref={myMeeting}>
-                    <div className="absolute bottom-5 right-5" id="local-audio"></div>
-                </div>
+            <div className="my-5 relative w-full h-full" id="remote-video" ref={myMeeting}>
+                <div className="absolute bottom-5 right-5" id="local-audio"></div>
+            </div>
             {/* )} */}
         </div>
     );

@@ -11,7 +11,7 @@ import { setMessageSearch, setVideoCall, setVoiceCall } from '../../redux/user/u
 
 function ChatHeader() {
     const dispatch = useDispatch();
-    const { currentChatUser } = useSelector((state) => state.user);
+    const { currentChatUser, onlineUsers } = useSelector((state) => state.user);
 
     const handleMessageSearch = () => {
         dispatch(setMessageSearch());

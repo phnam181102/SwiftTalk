@@ -36,10 +36,9 @@ function ChatListItem({ data, isContactsPage = false }) {
 
     return (
         <div className="flex cursor-pointer items-center hover:bg-gray" onClick={handleContactClick}>
-            <div className="min-w-fit px-5 pt-3 pb-1">
-                {console.log(data?.profilePicture)}
+            <div className="min-w-fit pl-5 pr-4 pt-3 pb-1">
                 <Avatar
-                    type="lg"
+                    type="md"
                     image={data?.profilePicture ? `${HOST}/${data.profilePicture}` : '/default_avatar.png'}
                 />
             </div>

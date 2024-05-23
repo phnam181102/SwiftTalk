@@ -17,6 +17,14 @@ export const messageApi = apiSlice.injectEndpoints({
                 credentials: 'include',
             }),
         }),
+        createGroup: builder.mutation({
+            query: ({ formData }) => ({
+                url: 'message/create-group',
+                method: 'POST',
+                credentials: 'include',
+                body: formData,
+            }),
+        }),
         getInitialContact: builder.query({
             query: ({ from }) => ({
                 url: `message/get-initial-contacts/${from}`,
@@ -61,4 +69,5 @@ export const {
     useGetInitialContactQuery,
     useAddImageMessageMutation,
     useAddAudioMessageMutation,
+    useCreateGroupMutation,
 } = messageApi;

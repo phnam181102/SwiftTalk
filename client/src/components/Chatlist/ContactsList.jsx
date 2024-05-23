@@ -13,7 +13,7 @@ function ContactsList() {
     const { allContacts, filteredAllContacts } = useSelector((state) => state.user);
 
     const { user } = useSelector((state) => state.auth);
-    const { data } = useGetAllUserQuery({ userId: user?.id }); // Sử dụng optional chaining để tránh lỗi
+    const { data } = useGetAllUserQuery({ userId: user?.id });
     const dispatch = useDispatch();
 
     const handleBack = () => {

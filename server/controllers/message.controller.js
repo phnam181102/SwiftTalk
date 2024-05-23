@@ -82,6 +82,48 @@ const messageController = {
         }
     },
 
+    createGroup: async (req, res, next) => {
+        try {
+            console.log('LOG============', req.body);
+            const { groupName, selectedUsers, admin } = req.body;
+
+            if (!groupName) {
+                return res.status(400).send('Group name is required.');
+            }
+            if (selectedUsers.length < 2) {
+                return res.status(400).send('At least two members.');
+            }
+            if (!req.file) {
+                return res.status(400).send('Image group is required.');
+            }
+
+            const date = Date.now();
+            const fileName = 'uploads/images/' + date + admin;
+            renameSync(req.file.path, fileName);
+
+            const newGroup = await prismaClient.conversations.create({
+                data: {
+                    name: groupName,
+                    admin,
+                    groupAvatar: fileName || '',
+                    members: {
+                        create: selectedUsers.map((userId) => ({
+                            user: { connect: { id: userId } },
+                        })),
+                    },
+                },
+            });
+
+            res.status(201).json({
+                message: 'Group created successfully',
+                group: newGroup,
+            });
+        } catch (error) {
+            console.error(error);
+            next(error);
+        }
+    },
+
     getInitialContactswithMessages: async (req, res, next) => {
         try {
             const userId = req.params.from;

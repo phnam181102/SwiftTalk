@@ -33,8 +33,8 @@ function Login() {
     useEffect(() => {
         if (!user) {
             if (data) {
-                const { email, name, image } = data?.user;
-                socialAuth({ email, name, profilePicture: image });
+                const { email, name } = data?.user;
+                socialAuth({ email, name });
             }
         }
     }, [data, user]);

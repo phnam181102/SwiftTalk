@@ -76,6 +76,16 @@ const AddGroup = ({ showModal, setShowModal }) => {
         }
     };
 
+    useEffect(() => {
+        if (isSuccess) {
+            setShowModal(false);
+            toast.success('Group created successfully');
+        }
+        if (error) {
+            toast.error('Create group failed. Please try again later');
+        }
+    }, [isSuccess, error]);
+
     const photoPickerChange = async (e) => {
         try {
             const file = e.target.files[0];

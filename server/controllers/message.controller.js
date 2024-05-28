@@ -84,8 +84,8 @@ const messageController = {
 
     createGroup: async (req, res, next) => {
         try {
-            console.log('LOG============', req.body);
-            const { groupName, selectedUsers, admin } = req.body;
+            const { groupName, selectedUsers: selectedUsersJSON, admin } = req.body;
+            const selectedUsers = JSON.parse(selectedUsersJSON);
 
             if (!groupName) {
                 return res.status(400).send('Group name is required.');
@@ -123,8 +123,8 @@ const messageController = {
             next(error);
         }
     },
-
-    getInitialContactswithMessages: async (req, res, next) => {
+    //
+    getInitialContactsWithMessages: async (req, res, next) => {
         try {
             const userId = req.params.from;
             const prisma = getPrismaInstance();
@@ -132,6 +132,12 @@ const messageController = {
             const user = await prismaClient.user.findUnique({
                 where: { id: userId },
             });
+
+            const userConversations = await prisma.conversationUser.findMany({
+                where: { userId },
+                include: { conversation: true },
+            });
+            console.log('userConversations============', userConversations);
 
             if (!user) {
                 return res.status(400).send('User not found!');

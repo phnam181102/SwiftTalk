@@ -9,9 +9,9 @@ const uploadAudio = multer({ dest: '/uploads/recordings' });
 
 messageRouter.post('/add-message', messageController.addMessage);
 messageRouter.get('/get-messages/:from/:to', messageController.getMessages);
-messageRouter.get('/get-initial-contacts/:from', messageController.getInitialContactswithMessages);
-messageRouter.post('/create-group', uploadImage.single('image'), messageController.createGroup);
+messageRouter.get('/get-initial-contacts/:from', messageController.getInitialContactsWithMessages);
 messageRouter.post('/add-image-message', uploadImage.single('image'), messageController.addImageMessage);
 messageRouter.post('/add-audio-message', uploadAudio.single('audio'), messageController.addAudioMessage);
+messageRouter.post('/create-group', uploadImage.single('image'), messageController.createGroup);
 
 export default messageRouter;

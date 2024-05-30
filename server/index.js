@@ -9,6 +9,7 @@ import userRouter from './routes/user.route.js';
 import messageRouter from './routes/message.route.js';
 import { Server } from 'socket.io';
 import { getUserIdFromSocket } from './utils/GetUserIdFromSocket.js';
+import groupRouter from './routes/group.route.js';
 
 dotenv.config();
 const app = express();
@@ -31,12 +32,13 @@ app.use(express.json());
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/message', messageRouter);
+app.use('/api/v1/group', groupRouter);
 
 app.use('/uploads/images', express.static('uploads/images'));
 app.use('/uploads/recordings', express.static('uploads/recordings'));
 
 export const prismaClient = new PrismaClient({
-    log: ['query'],
+    log: ['query', 'info', 'warn', 'error'],
 });
 
 app.use(ErrorMiddleware);

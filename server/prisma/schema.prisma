@@ -25,6 +25,7 @@ model User {
   sentMessages      Messages[]         @relation("sentMessages")
   receivedMessages  Messages[]         @relation("receivedMessages")
   conversationLinks ConversationUser[]
+  sentGroupMessages MessageGroup[]     @relation("sentGroupMessages")
 }
 
 model Messages {
@@ -39,14 +40,28 @@ model Messages {
   createdAt     DateTime @default(now())
 }
 
+model MessageGroup {
+  id             String             @id @default(auto()) @map("_id") @db.ObjectId
+  sender         User               @relation("sentGroupMessages", fields: [senderId], references: [id])
+  senderId       String             @db.ObjectId
+  type           String             @default("text")
+  message        String
+  messageStatus  String             @default("sent")
+  createdAt      DateTime           @default(now())
+  conversation   Conversations      @relation(fields: [conversationId], references: [id])
+  conversationId String             @db.ObjectId
+  members        ConversationUser[]
+}
+
 model Conversations {
-  id          String             @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  admin       String             @db.ObjectId
-  groupAvatar String             @default("")
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
-  members     ConversationUser[]
+  id           String             @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  admin        String             @db.ObjectId
+  groupAvatar  String             @default("")
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  members      ConversationUser[]
+  MessageGroup MessageGroup[]
 }
 
 model ConversationUser {
@@ -55,4 +70,6 @@ model ConversationUser {
   conversationId String        @db.ObjectId
   user           User          @relation(fields: [userId], references: [id])
   userId         String        @db.ObjectId
+  MessageGroup   MessageGroup? @relation(fields: [messageGroupId], references: [id])
+  messageGroupId String?       @db.ObjectId
 }

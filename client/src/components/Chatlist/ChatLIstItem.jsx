@@ -39,7 +39,11 @@ function ChatListItem({ data, isContactsPage = false }) {
             <div className="min-w-fit pl-5 pr-4 pt-3 pb-1">
                 <Avatar
                     type="md"
-                    image={data?.profilePicture ? `${HOST}/${data.profilePicture}` : '/default_avatar.png'}
+                    image={
+                        data?.profilePicture || data.groupAvatar
+                            ? `${HOST}/${data.profilePicture || data.groupAvatar}`
+                            : '/default_avatar.png'
+                    }
                 />
             </div>
 

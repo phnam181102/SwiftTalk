@@ -60,6 +60,13 @@ export const messageApi = apiSlice.injectEndpoints({
                 };
             },
         }),
+        fetchGroup: builder.query({
+            query: () => ({
+                url: `message/fetch-group`,
+                method: 'GET',
+                credentials: 'include',
+            }),
+        }),
     }),
 });
 
@@ -70,4 +77,5 @@ export const {
     useAddImageMessageMutation,
     useAddAudioMessageMutation,
     useCreateGroupMutation,
+    useFetchGroupQuery,
 } = messageApi;

@@ -16,7 +16,7 @@ import Button from './Button';
 import Modal from './Modal';
 import { useForm } from 'react-hook-form';
 import PhotoPicker from './PhotoPicker';
-import { useCreateGroupMutation } from '../../redux/message/messageApi';
+import { useCreateGroupMutation, useFetchGroupQuery } from '../../redux/message/messageApi';
 import toast from 'react-hot-toast';
 import { createFormData } from '../../utils/createFormData';
 
@@ -30,6 +30,7 @@ const AddGroup = ({ showModal, setShowModal }) => {
     const [filteredContacts, setFilteredContacts] = useState([]);
     const [grabPhoto, setGrabPhoto] = useState(false);
     const [imageFile, setImageFile] = useState(null);
+    const { refetch: refetchGroup } = useFetchGroupQuery();
 
     const dispatch = useDispatch();
     const [createGroup, { isSuccess, error }] = useCreateGroupMutation();
@@ -71,6 +72,7 @@ const AddGroup = ({ showModal, setShowModal }) => {
             formData.append('admin', user.id);
 
             await createGroup({ formData });
+            refetchGroup();
         } catch (error) {
             console.log(error.message);
         }

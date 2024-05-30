@@ -123,7 +123,7 @@ const messageController = {
             next(error);
         }
     },
-    //
+
     getInitialContactsWithMessages: async (req, res, next) => {
         try {
             const userId = req.params.from;
@@ -132,12 +132,6 @@ const messageController = {
             const user = await prismaClient.user.findUnique({
                 where: { id: userId },
             });
-
-            const userConversations = await prisma.conversationUser.findMany({
-                where: { userId },
-                include: { conversation: true },
-            });
-            console.log('userConversations============', userConversations);
 
             if (!user) {
                 return res.status(400).send('User not found!');
@@ -276,6 +270,40 @@ const messageController = {
         } catch (e) {
             console.log(e);
             // next(e);
+        }
+    },
+
+    fetchGroup: async (req, res, next) => {
+        try {
+            console.log('----------123');
+            const id = req.user.id;
+            console.log('-----', id);
+
+            const conversation = await prismaClient.conversations
+                .findMany({
+                    where: {
+                        OR: [{ admin: id }, { members: { some: { userId: id } } }],
+                    },
+                    include: {
+                        members: {
+                            include: {
+                                user: true,
+                            },
+                        },
+                    },
+                })
+                .catch((error) => {
+                    console.error('Error fetching conversation:', error);
+                    throw error;
+                });
+
+            res.status(201).json({
+                message: 'Get group successfully',
+                group: conversation,
+            });
+        } catch (error) {
+            console.error(error);
+            next(error);
         }
     },
 };

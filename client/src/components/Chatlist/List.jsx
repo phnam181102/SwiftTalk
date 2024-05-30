@@ -12,7 +12,6 @@ function List() {
     const { data, error } = useGetInitialContactQuery({ from: user?.id });
 
     useEffect(() => {
-        console.log(data);
         if (data) {
             dispatch(setUserContacts({ userContacts: data.users }));
             dispatch(setOnlineUsers({ onlineUsers: data.onlineUsers }));

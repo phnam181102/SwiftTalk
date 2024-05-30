@@ -24,7 +24,8 @@ function ChatListItem({ data, isContactsPage = false }) {
                         name: data.name,
                         email: data.email,
                         profilePicture: data.profilePicture,
-                        id: user.id === data.senderId ? data.receiverId : data.senderId,
+                        id: user.id === data.senderId ? data.receiverId : data.senderId ? data.senderId : data.id,
+                        isBot: data.isBot,
                     },
                 }),
             );
@@ -56,7 +57,7 @@ function ChatListItem({ data, isContactsPage = false }) {
                                     !data.totalUnreadMessages > 0 ? 'text-white' : 'text-primary-300'
                                 } text-sm`}
                             >
-                                {calculateTime(data.createdAt)}
+                                {data.createdAt && calculateTime(data.createdAt)}
                             </span>
                         </div>
                     )}

@@ -56,7 +56,7 @@ function ChatContainer({ socket }) {
                                                 : 'bg-primary-300 text-light'
                                         }`}
                                     >
-                                        <span className="break-all">{message.message}</span>
+                                        <span className="break-words">{message.message}</span>
                                         <div className="flex gap-1 items-end">
                                             <span
                                                 className={`text-gray text-[11px] pt-1 min-w-fit ${

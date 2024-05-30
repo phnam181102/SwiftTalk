@@ -62,9 +62,9 @@ function SearchMessages() {
                     )}
                     <div className="flex flex-col w-full h-full">
                         {searchedMessages.map((message) => (
-                            <div className="flex cursor-pointer flex-col justify-center hover:bg-primary-300 w-full px-5 border-b-[0.1px] border-secondary py-5">
-                                <div className="text-sm text-secondary">{calculateTime(message.createdAt)}</div>
-                                <div className="text-green-400">{message.message}</div>
+                            <div className="flex cursor-pointer flex-col justify-center hover:bg-primary-100 w-full px-5 border-b-[0.1px] border-primary-200 py-5">
+                                <div className="text-sm text-primary-300">{calculateTime(message.createdAt)}</div>
+                                <div className="text-dark">{message.message}</div>
                             </div>
                         ))}
                     </div>

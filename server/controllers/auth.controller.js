@@ -20,7 +20,7 @@ const authController = {
                 return next(new ErrorHandler('Email already exist', 400));
             }
             user = await prismaClient.user.create({
-                data: { name, email, username, hashedPassword: hashSync(password, 10) },
+                data: { name, email, username, hashedPassword: hashSync(password, 10), isBot: false },
             });
 
             res.json(user);

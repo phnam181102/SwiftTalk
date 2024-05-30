@@ -1,6 +1,10 @@
+import axios from 'axios';
 import getPrismaInstance from '../utils/PrismaClient.js';
 import { prismaClient } from '../index.js';
 import { renameSync } from 'fs';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const messageController = {
     addMessage: async (req, res, next) => {
@@ -20,6 +24,19 @@ const messageController = {
                     include: { sender: true, receiver: true },
                 });
 
+                const botUser = await prisma.user.findFirst({
+                    where: {
+                        id: to,
+                        isBot: true,
+                    },
+                });
+
+                if (botUser) {
+                    messageController
+                        .botResponse(req.body)
+                        .catch((err) => console.error('Error in bot response:', err));
+                }
+
                 return res.status(201).send({
                     message: newMessage,
                 });
@@ -28,6 +45,50 @@ const messageController = {
             return res.status(400).send('From, to and Message is required');
         } catch (e) {
             next(e);
+        }
+    },
+
+    botResponse: async ({ message, from, to }) => {
+        const options = {
+            method: 'POST',
+            url: 'https://chatgpt-42.p.rapidapi.com/conversationgpt4',
+            headers: {
+                'content-type': 'application/json',
+                'X-RapidAPI-Key': process.env.GPT_API_KEY,
+                'X-RapidAPI-Host': process.env.GPT_API_HOST,
+            },
+            data: {
+                messages: [
+                    {
+                        role: 'user',
+                        content: message,
+                    },
+                ],
+                system_prompt: '',
+                temperature: 0.9,
+                top_k: 5,
+                top_p: 0.9,
+                max_tokens: 256,
+                web_access: false,
+            },
+        };
+
+        try {
+            const { data } = await axios.request(options);
+
+            if (data.status) {
+                const prisma = getPrismaInstance();
+                await prisma.messages.create({
+                    data: {
+                        message: data.result,
+                        sender: { connect: { id: to } },
+                        receiver: { connect: { id: from } },
+                        messageStatus: 'sent',
+                    },
+                });
+            }
+        } catch (error) {
+            console.error('Error in botResponse:', error);
         }
     },
 
@@ -73,7 +134,6 @@ const messageController = {
                     },
                 });
             }
-
             res.status(200).json({
                 messages,
             });
@@ -132,12 +192,6 @@ const messageController = {
             const user = await prismaClient.user.findUnique({
                 where: { id: userId },
             });
-
-            const userConversations = await prisma.conversationUser.findMany({
-                where: { userId },
-                include: { conversation: true },
-            });
-            console.log('userConversations============', userConversations);
 
             if (!user) {
                 return res.status(400).send('User not found!');
@@ -203,6 +257,26 @@ const messageController = {
                     },
                 });
             }
+
+            const botUsers = await prisma.user.findMany({
+                where: { isBot: true },
+            });
+
+            botUsers.forEach((botUser) => {
+                if (!users.get(botUser.id)) {
+                    users.set(botUser.id, {
+                        ...botUser,
+                        totalUnreadMessages: 0,
+                        messageId: null,
+                        type: null,
+                        message: null,
+                        messageStatus: null,
+                        createdAt: null,
+                        senderId: null,
+                        receiverId: null,
+                    });
+                }
+            });
 
             return res.status(200).json({
                 users: Array.from(users.values()),

@@ -19,6 +19,7 @@ model User {
   name              String?
   username          String             @unique
   profilePicture    String             @default("")
+  isBot             Boolean            @default(false)
   hashedPassword    String?
   createAt          DateTime           @default(now())
   updateAt          DateTime           @updatedAt

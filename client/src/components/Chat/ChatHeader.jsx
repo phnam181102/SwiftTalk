@@ -44,7 +44,7 @@ function ChatHeader() {
     };
 
     return (
-        <div className="h-20 px-5 py-4 flex justify-between shadow-[0_8px_24px_0_rgba(149,157,165,0.2)] items-center bg-white z-10">
+        <div className="h-20 px-5 py-4 flex justify-between shadow-[0_8px_24px_0_rgba(149,157,165,0.2)] items-center bg-white z-10 select-none">
             <div className="flex items-center justify-center gap-6">
                 <Avatar
                     type="sm"
@@ -57,13 +57,17 @@ function ChatHeader() {
 
                 <div className="flex flex-col ">
                     <span className="text-dark text-xl leading-5">{currentChatUser?.name}</span>
-                    <span className="text-gray text-sm leading-6">online</span>
+                    <span className="text-gray text-sm leading-6">{currentChatUser?.isBot ? '24/24' : 'online'}</span>
                 </div>
             </div>
 
             <div className="flex gap-6 items-center">
-                <BsTelephone className="text-gray cursor-pointer text-2xl " onClick={handleVoiceCall} />
-                <IoVideocamOutline className="text-gray cursor-pointer text-3xl " onClick={handleVideoCall} />
+                {!currentChatUser?.isBot && (
+                    <>
+                        <BsTelephone className="text-gray cursor-pointer text-2xl " onClick={handleVoiceCall} />
+                        <IoVideocamOutline className="text-gray cursor-pointer text-3xl " onClick={handleVideoCall} />
+                    </>
+                )}
                 <FiSearch className="text-gray cursor-pointer text-2xl" onClick={handleMessageSearch} />
                 <BsThreeDotsVertical className="text-gray cursor-pointer text-2xl " />
             </div>

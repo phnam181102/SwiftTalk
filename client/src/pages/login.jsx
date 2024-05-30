@@ -109,8 +109,8 @@ function Login() {
     return (
         <div className="text-[#333] bg-primary-200">
             <div className="min-h-screen flex justify-center">
-                <div className=" grid items-center gap-4 w-full">
-                    <div className="bg-white shadow-lg min-w-[450px] justify-self-center rounded-md p-8 max-w-md max-md:mx-auto">
+                <div className="grid items-center gap-4 w-full">
+                    <div className=" bg-white shadow-lg min-w-[450px] justify-self-center rounded-md p-8 max-w-md max-md:mx-auto">
                         <form className="space-y-5 flex flex-col items-center w-full" onSubmit={handleSubmit(onSubmit)}>
                             <Image src="/chat.png" width={80} height={80} alt="Picture of the author" />
 
@@ -123,7 +123,7 @@ function Login() {
 
                                     <span
                                         onClick={toggleVariant}
-                                        className="text-primary-300
+                                        className="text-dark
                                         font-semibold hover:underline ml-1
                                         whitespace-nowrap"
                                     >
@@ -201,13 +201,13 @@ function Login() {
 
                                 {!show ? (
                                     <AiOutlineEyeInvisible
-                                        className="absolute bottom-4 right-3 z-1 cursor-pointer text-dark"
+                                        className="absolute bottom-3 right-3 z-1 cursor-pointer text-dark"
                                         size={20}
                                         onClick={() => setShow(true)}
                                     />
                                 ) : (
                                     <AiOutlineEye
-                                        className="absolute bottom-4 right-3 z-1 cursor-pointer text-dark"
+                                        className="absolute bottom-3 right-3 z-1 cursor-pointer text-dark"
                                         size={20}
                                         onClick={() => setShow(false)}
                                     />
@@ -219,7 +219,7 @@ function Login() {
                                     <div className="text-base">
                                         <a
                                             href="jajvascript:void(0);"
-                                            className="text-primary-300 hover:underline font-semibold "
+                                            className="text-dark hover:underline font-semibold "
                                         >
                                             Forgot your password?
                                         </a>

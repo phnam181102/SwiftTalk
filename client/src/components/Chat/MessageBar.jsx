@@ -115,6 +115,15 @@ function MessageBar({ socket }) {
             refetch();
             refetchInitialContact();
             socket.current.emit('stop typing', currentChatUser?.id);
+
+            if (currentChatUser.isBot) {
+                setTimeout(function () {
+                    refetch();
+                }, 10000);
+                setTimeout(function () {
+                    refetch();
+                }, 20000);
+            }
         } catch (error) {
             console.log(error.message);
         }
@@ -158,7 +167,6 @@ function MessageBar({ socket }) {
         socket.current.on('typing', () => setIsTyping(true));
         socket.current.on('stop typing', () => setIsTyping(false));
     }, []);
-
 
     return (
         <>
